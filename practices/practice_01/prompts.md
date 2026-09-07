@@ -6,6 +6,7 @@
 |---|---|---|---|---|---|---|---|---|
 | P1-01 | Baseline-ревью `TRAINING_PR.diff` | gpt-5 | zero-shot | Посмотри PR TRAINING_PR.diff и найди проблемы | [Результат](./p1-01_answear.md) | [Принято](./ai_work_record/p1-01_approved.md) | [Отклонили](./ai_work_record/p1-01_reject.md) | Вручную, смотря указанные строки и сравнивая с общим контекстом из DIFF |
 | P1-02 | Повторное ревью с master prompt | gpt-5 | master prompt | @practices/practice_01/prompts.md @practices/practice_01/TRAINING_PR.diff  | [Ответ](./ai_work_record/p1-02_answer.md) | Всё принято | ничего | Сверился с правилами из [Инструкции](./CASE.md) и с фрагментами кодав DIFF'е |
+| P1-02-02 | Анализ AS IS и TO BE кода | gpt-5 | CRTF | [Промт](./ai_work_record/p1-02-02_prompt.md) | [Патч](./ai_work_record/p1-02-02_answer.md) | Всё | Подправил `Mermaid` диаграмму | Что проверили и исправили сами: Проверено, что использзованы реальные требования. Проверен алгоритм TO BE на корректность. |
 | P1-03 |  |  |  |  |  |  |  |  |
 
 ## Master Prompt v1
