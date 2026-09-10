@@ -4,9 +4,9 @@
 
 | ID | Артефакт и цель | Инструмент / модель | Тип промпта | Запрос или ссылка на него | Результат или ссылка | Что приняли | Что отклонили или исправили | Как проверили |
 |---|---|---|---|---|---|---|---|---|
-| P1-01 | Baseline-ревью `TRAINING_PR.diff` | gpt-5 | zero-shot | Посмотри PR TRAINING_PR.diff и найди проблемы | [Результат](./p1-01_answear.md) | [Принято](./p1-01_approved.md) | [Отклонили](./p1-01_reject.md) | Вручную, смотря указанные строки и сравнивая с общим контекстом из DIFF |
-| P1-02 | Повторное ревью с master prompt | gpt-5 | master prompt | @practices/practice_01/prompts.md @practices/practice_01/TRAINING_PR.diff  | [Ответ](./p1-02_answer.md) | Всё принято | ничего | Сверился с правилами из [Инструкции](./CASE.md) и с фрагментами кодав DIFF'е |
-| P1-03 |  |  |  |  |  |  |  |  |
+| P1-01 | Baseline-ревью `TRAINING_PR.diff` | gpt-5 | zero-shot | Посмотри PR TRAINING_PR.diff и найди проблемы | [Результат](./p1-01_answear.md) | [Принято](./ai_work_record/p1-01_approved.md) | [Отклонили](./ai_work_record/p1-01_reject.md) | Вручную, смотря указанные строки и сравнивая с общим контекстом из DIFF |
+| P1-02 | Повторное ревью с master prompt | gpt-5 | master prompt | @practices/practice_01/prompts.md (Master prompt v1) @practices/practice_01/TRAINING_PR.diff  | [Ответ](./ai_work_record/p1-02_answer.md) | Всё принято | ничего | Сверился с правилами из [Инструкции](./CASE.md) и с фрагментами кодав DIFF'е |
+| P1-03 | Заполнение файлов-контекстов и ревью исходя из полного контекста | gpt-5 | master prompt | [Master prompt v2](./master-prompt_v2.md) | [Ревью](./ai_work_record/p1-03_answer.md), [Патч](./ai_work_record/p1-03_patch.md) | Принято всё с небольшими корректировками | Исправлен недостаток конкретики в некоторых файлах (например в [ADR](./adr.md)) | Проверка на соответсвие данных в файле к его тематике и достаточной ифнормативности информации |
 
 ## Master Prompt v1
 
