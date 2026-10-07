@@ -49,12 +49,13 @@
 task {
   "description": "Актуализация документации и ADR",
   "subagent_type": "docs-spec",
-  "prompt": "Обнови/создай файлы в ./docs по ADR и требованиям. Следуй правилам редактирования: минимальные изменения, русский язык, используй apply_patch."
+  "prompt": "Перед началом ЗАГРУЗИ skills: find-skills. ПОДКЛЮЧИ MCP: локальный mcp-docs-ts и внешний context7. Для чтения и поиска по ./docs используй ТОЛЬКО инструменты локального MCP: docs.list, docs.read, docs.search. Обнови/создай файлы в ./docs по ADR и требованиям. Следуй правилам: минимальные изменения, русский язык, используй apply_patch."
 }
 ```
 
 Рекомендуемый порядок действий в prompt:
-- проверить `./docs/product-requirements.md`, `./docs/user-flows.md`, `./docs/terms.md`;
+- вызвать tools локального MCP: `docs.list` для инвентаризации;
+- через `docs.read`/`docs.search` проверить `./docs/product-requirements.md`, `./docs/user-flows.md`, `./docs/terms.md`;
 - обновить/создать ADR в `./docs/adr/`;
 - валидировать ссылки между файлами.
 
@@ -66,13 +67,15 @@ task {
 task {
   "description": "Реализация кода согласно ADR",
   "subagent_type": "code",
-  "prompt": "Реализуй функциональность Kanban CLI по ADR. Соблюдай минимальные изменения, используй apply_patch, язык C#. Храни данные в data/board.json."
+  "prompt": "Перед началом ЗАГРУЗИ skills: find-skills, dotnet-runner. ПОДКЛЮЧИ MCP: локальный mcp-docs-ts для ./docs и внешний context7 для справки по C#. Используй локальный MCP для чтения ADR/требований (docs.read/docs.search). Для сборки/тестов используй ТОЛЬКО инструменты skill dotnet-runner (build/test/run), не вызывай dotnet напрямую. Реализуй функциональность Kanban CLI по ADR. Минимальные изменения, используй apply_patch, язык C#. Храни данные в data/board.json."
 }
 ```
 
 Рекомендуемый порядок действий в prompt:
+- получить контекст ADR через локальный MCP (docs.read ./docs/adr/...);
 - реализовать доменные классы/CLI по ADR;
 - обеспечить сериализацию в `data/board.json`;
+- запустить `dotnet-runner.build` и `dotnet-runner.test`;
 - подготовить минимальные тесты.
 
 3. Test Agent
@@ -83,7 +86,7 @@ task {
 task {
   "description": "Сборка и тестирование .NET проекта",
   "subagent_type": "test",
-  "prompt": "Выполни dotnet build и dotnet test. Верни краткий отчёт по результатам. Если есть skill dotnet-runner — используй его."
+  "prompt": "Перед началом ЗАГРУЗИ skills: dotnet-runner, watch-runner. ПОДКЛЮЧИ MCP: локальный mcp-docs-ts (для чтения требований при необходимости). Выполни сборку/тесты через инструменты skill dotnet-runner (build/test). При необходимости запусти watch-runner.start для автопроверок и верни краткий отчёт/статус."
 }
 ```
 
@@ -94,13 +97,13 @@ task {
 ## Обязательные Подключения Перед Запуском
 
 Orchestrator должен:
-1. Загрузить skill `find-skills`.
-2. Подключить MCP `context7` (внешний C#/.NET docs) и локальный MCP `mcp-docs-ts` для `./docs`.
-3. Проверить доступность `./docs` и наличия ADR.
+1. ЯВНО загрузить skills: `find-skills`, `dotnet-runner`, `watch-runner`.
+2. Подключить MCP: внешний `context7` (официальная документация C#/.NET) и локальный `mcp-docs-ts` для `./docs`.
+3. Проверить доступность `./docs` и наличия ADR. Если локальный MCP недоступен — прервать задачу с сообщением и инструкцией по запуску `servers/mcp-docs-ts`.
 
 ### Запуск агентного hook (watch-runner)
 
-- Оркестратор может запустить вотчер:
+- Оркестратор обязан запускать вотчер перед делегированием задач:
 
 ```
 node .agents/skills/watch-runner/src/watcher.js --docs ./docs --src ./kanban-cli --interval 1500
@@ -136,6 +139,7 @@ node .agents/skills/watch-runner/src/ctl.js stop
 Рекомендованные вспомогательные prompt-фрагменты для загрузки источников:
 
 ```
+В начале сессии: вызови skill tool для загрузки `find-skills`, `dotnet-runner`, `watch-runner`.
 Используй MCP `context7` для уточнений по синтаксису C# и .NET CLI.
 Используй локальный MCP `mcp-docs-ts` (tools: docs.list, docs.read, docs.search) для чтения ./docs.
 ```
