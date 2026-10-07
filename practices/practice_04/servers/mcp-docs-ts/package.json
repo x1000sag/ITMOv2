@@ -1,0 +1,22 @@
+{
+  "name": "mcp-docs-ts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server (TypeScript) to list/read/search local ./docs for RAG without ML.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.cjs",
+    "dev": "ts-node ./src/selftest.ts",
+    "selftest": "node dist/selftest.js",
+    "selftest:dev": "ts-node --esm ./src/selftest.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}
