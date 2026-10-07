@@ -1,0 +1,199 @@
+{
+  "format": 1,
+  "restore": {
+    "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Cli/Kanban.Cli.csproj": {}
+  },
+  "projects": {
+    "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Cli/Kanban.Cli.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Cli/Kanban.Cli.csproj",
+        "projectName": "Kanban.Cli",
+        "projectPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Cli/Kanban.Cli.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Cli/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/Kanban.Infrastructure.csproj": {
+                "projectPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/Kanban.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/root/.dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/Kanban.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/Kanban.Domain.csproj",
+        "projectName": "Kanban.Domain",
+        "projectPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/Kanban.Domain.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/root/.dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/Kanban.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/Kanban.Infrastructure.csproj",
+        "projectName": "Kanban.Infrastructure",
+        "projectPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/Kanban.Infrastructure.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/Kanban.Domain.csproj": {
+                "projectPath": "/mnt/d/working/code/ITMOv2/practices/practice_04/kanban-cli/src/Kanban.Domain/Kanban.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/root/.dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
