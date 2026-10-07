@@ -1,0 +1,59 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "orchestrator",
+  "plugin": [
+    ".opencode/plugin/agent-watch.ts"
+  ],
+  "provider": {
+    "vsellm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "VseLLM",
+      "options": {
+        "baseURL": "https://litellm.data-light.ru",
+        "apiKey": "{env:VSELLM_API_KEY}"
+      },
+      "models": {
+        "openai/gpt-5": {
+          "name": "openai/gpt-5"
+        },
+        "anthropic/claude-sonnet-4": {
+          "name": "anthropic/claude-sonnet-4"
+        }
+      }
+    }
+  },
+  "agent": {
+    "orchestrator": {
+      "description": "Plans work, delegates to subagents, aggregates results. Reads AGENTS.md and uses skills/MCP.",
+      "mode": "primary",
+      "prompt": "{file:./AGENTS.md}\n\nВы — Orchestrator. Следуйте разделам 'Роли агентов' и 'Процедуры'. Начинайте с постановки задач и делегируйте их субагентам. Используйте skills и MCP.",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "docs-spec": {
+      "description": "Maintains docs and ADR in ./docs per requirements.",
+      "mode": "subagent",
+      "prompt": "{file:./AGENTS.md}\n\nВы — Docs/Spec Agent. Поддерживайте актуальность документации и ADR в каталоге ./docs.",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code": {
+      "description": "Implements Kanban CLI in C# per ADR.",
+      "mode": "subagent",
+      "prompt": "{file:./AGENTS.md}\n\nВы — Code Agent. Реализуйте функциональность Kanban CLI в соответствии с ADR.",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "test": {
+      "description": "Runs build/test and reports results.",
+      "mode": "subagent",
+      "prompt": "{file:./AGENTS.md}\n\nВы — Test Agent. Запускайте build/test и сообщайте результаты в сессию.",
+      "permission": {
+        "*": "allow"
+      }
+    }
+  }
+}
