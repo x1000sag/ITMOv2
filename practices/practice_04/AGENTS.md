@@ -32,6 +32,7 @@
 - Skills:
   - find-skills: `.agents/skills/find-skills/` — поиск и подключение skills из экосистемы skills.sh.
   - dotnet-runner (опционально): skill для `dotnet build/test/run` (если отсутствует — Orchestrator может задать задачу Code Agent на создание локального skill).
+  - watch-runner: `.agents/skills/watch-runner/` — агентный вотчер/раннер, реагирующий на изменения файлов и запускающий проверки. Не является git hook; используется агентами в сессии.
 - MCP:
   - Локальный MCP (TypeScript) для RAG по `./docs` — `servers/mcp-docs-ts` (интерфейсы: `docs.list`, `docs.read`, `docs.search`).
   - Внешний MCP по C#: `context7` — официальная документация C#/.NET (https://learn.microsoft.com/ru-ru/dotnet/csharp/).
@@ -96,6 +97,41 @@ Orchestrator должен:
 1. Загрузить skill `find-skills`.
 2. Подключить MCP `context7` (внешний C#/.NET docs) и локальный MCP `mcp-docs-ts` для `./docs`.
 3. Проверить доступность `./docs` и наличия ADR.
+
+### Запуск агентного hook (watch-runner)
+
+- Оркестратор может запустить вотчер:
+
+```
+node .agents/skills/watch-runner/src/watcher.js --docs ./docs --src ./kanban-cli --interval 1500
+```
+
+- Вотчер не зависит от git и предназначен для интеграции в агентные сессии. При изменении исходников .NET он запускает `dotnet test` и возвращает вывод в stdout/stderr для агентов.
+
+#### Рекомендуемый сценарий Orchestrator
+
+- Перед делегированием задач запусти watcher контроллером:
+
+```
+node .agents/skills/watch-runner/src/ctl.js start --docs ./docs --src ./kanban-cli --interval 1500 --duration 120000
+```
+
+- Для проверки статуса:
+
+```
+node .agents/skills/watch-runner/src/ctl.js status
+```
+
+- Перед завершением сессии останови watcher:
+
+```
+node .agents/skills/watch-runner/src/ctl.js stop
+```
+
+- Если доступны tools навыка, используй их:
+  - `watch.start` (эквивалент стартовой команды)
+  - `watch.status`
+  - `watch.stop`
 
 Рекомендованные вспомогательные prompt-фрагменты для загрузки источников:
 
