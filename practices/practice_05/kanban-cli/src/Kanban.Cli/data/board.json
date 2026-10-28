@@ -1,0 +1,17 @@
+{
+  "Name": "Test",
+  "Columns": [
+    {
+      "Name": "ToDo",
+      "Cards": []
+    },
+    {
+      "Name": "InProgress",
+      "Cards": []
+    },
+    {
+      "Name": "Done",
+      "Cards": []
+    }
+  ]
+}
