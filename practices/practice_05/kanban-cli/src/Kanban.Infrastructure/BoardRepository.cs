@@ -49,7 +49,19 @@ public class BoardRepository
             Directory.CreateDirectory(dir);
 
         var json = JsonSerializer.Serialize(board, _jsonOptions);
-        File.WriteAllText(_path, json);
+        var tempPath = _path + ".tmp" + Guid.NewGuid().ToString("N");
+        try
+        {
+            File.WriteAllText(tempPath, json);
+            File.Move(tempPath, _path, overwrite: true);
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+            {
+                try { File.Delete(tempPath); } catch { }
+            }
+        }
     }
 }
 

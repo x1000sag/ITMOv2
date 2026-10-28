@@ -1,0 +1,35 @@
+{
+  "Name": "My Board",
+  "Columns": [
+    {
+      "Name": "ToDo",
+      "Cards": [
+        {
+          "Id": "718828b4-fe9b-4db5-8f59-983b8cdbd25b",
+          "Title": "\u0417\u0430\u0449\u0438\u0442\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u0432\u0430\u0439\u0431\u043A\u043E\u0434\u0438\u043D\u0433\u0435",
+          "Description": "Hellow \u0422\u044F\u043D\u044C\u0430\u043D\u044C\u043C\u0435\u043D\u044C",
+          "Tags": [],
+          "Deadline": "2026-10-29",
+          "CreatedAt": "2026-10-28T18:26:10.626Z"
+        }
+      ]
+    },
+    {
+      "Name": "InProgress",
+      "Cards": []
+    },
+    {
+      "Name": "Done",
+      "Cards": [
+        {
+          "Id": "2e1ad445-50a9-4a5c-ac0c-e8819ab215c2",
+          "Title": "\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u043A\u0430\u043A\u0430\u0448\u043A\u0438",
+          "Description": "\u0412\u043E\u0442 \u0442\u0430\u043A\u043E\u0435 \u043F\u043E\u043B\u044E\u0448\u043A\u043E",
+          "Tags": [],
+          "Deadline": "2026-10-28",
+          "CreatedAt": "2026-10-28T18:23:36.904Z"
+        }
+      ]
+    }
+  ]
+}
