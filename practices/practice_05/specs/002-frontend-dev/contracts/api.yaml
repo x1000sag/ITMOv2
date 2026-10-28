@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Kanban API
+  description: API для работы с доской Kanban, совместимый с форматом data/board.json
+  version: 1.0.0
+paths:
+  /api/board:
+    get:
+      summary: Получить доску
+      description: Возвращает текущую доску из data/board.json
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        '500':
+          description: Ошибка сервера
+    put:
+      summary: Сохранить доску
+      description: Сохраняет доску в data/board.json атомарным способом
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Board'
+      responses:
+        '200':
+          description: Доска успешно сохранена
+        '400':
+          description: Некорректный формат данных
+        '500':
+          description: Ошибка сервера
+components:
+  schemas:
+    Board:
+      type: object
+      required:
+        - name
+        - columns
+      properties:
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Column'
+    Column:
+      type: object
+      required:
+        - name
+        - cards
+      properties:
+        name:
+          type: string
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+    Card:
+      type: object
+      required:
+        - id
+        - title
+        - tags
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        deadline:
+          type: string
+          format: date
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: UTC время создания
