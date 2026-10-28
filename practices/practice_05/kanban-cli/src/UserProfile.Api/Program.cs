@@ -20,6 +20,13 @@ builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 var app = builder.Build();
 
+// Apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<UserProfileDbContext>();
+    db.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

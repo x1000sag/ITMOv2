@@ -23,9 +23,9 @@
 
 **Purpose**: Prepare environment for integration analysis
 
-- [ ] T001 [P] Проверить текущую ветку и статус репозитория в `/mnt/d/working/code/ITMOv2/practices/practice_05/`
-- [ ] T002 [P] Получить информацию о коммитах в ветках `dev/practice_05-back` и `dev/practice_05-front` относительно общей базы
-- [ ] T003 [P] Сохранить текущие состояния файлов для возможного отката при необходимости
+- [X] T001 [P] Проверить текущую ветку и статус репозитория в `/mnt/d/working/code/ITMOv2/practices/practice_05/`
+- [X] T002 [P] Получить информацию о коммитах в ветках `dev/practice_05-back` и `dev/practice_05-front` относительно общей базы
+- [X] T003 [P] Сохранить текущие состояния файлов для возможного отката при необходимости
 
 ---
 
@@ -35,9 +35,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Проанализировать изменения в ветке `dev/practice_05-back` относительно текущей ветки или общей базы
-- [ ] T005 Проанализировать изменения в ветке `dev/practice_05-front` относительно текущей ветки или общей базы
-- [ ] T006 Сформировать сводный отчет о всех добавленных/измененных/удаленных файлах в обеих ветках
+- [X] T004 Проанализировать изменения в ветке `dev/practice_05-back` относительно текущей ветки или общей базы
+- [X] T005 Проанализировать изменения в ветке `dev/practice_05-front` относительно текущей ветки или общей базы
+- [X] T006 Сформировать сводный отчет о всех добавленных/измененных/удаленных файлах в обеих ветках
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -51,11 +51,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Выполнить `git diff --name-status <base>...dev/practice_05-back` для получения списка файлов back-ветки
-- [ ] T008 [US1] Выполнить `git diff --name-status <base>...dev/practice_05-front` для получения списка файлов front-ветки
-- [ ] T009 [US1] Выявить общие файлы, измененные в обеих ветках (приоритет - `kanban-cli/Kanban.sln`)
-- [ ] T010 [US1] Проанализировать содержимое конфликтующих файлов в обеих ветках для понимания различий
-- [ ] T011 [US1] Зафиксировать результаты анализа в `specs/004-integrate-back-front/analysis-report.md` (при необходимости)
+- [X] T007 [US1] Выполнить `git diff --name-status <base>...dev/practice_05-back` для получения списка файлов back-ветки
+- [X] T008 [US1] Выполнить `git diff --name-status <base>...dev/practice_05-front` для получения списка файлов front-ветки
+- [X] T009 [US1] Выявить общие файлы, измененные в обеих ветках (приоритет - `kanban-cli/Kanban.sln`)
+- [X] T010 [US1] Проанализировать содержимое конфликтующих файлов в обеих ветках для понимания различий
+- [X] T011 [US1] Зафиксировать результаты анализа в `specs/004-integrate-back-front/analysis-report.md` (при необходимости)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -69,11 +69,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Определить порядок слияния на основе анализа (рекомендуется слить back первым, затем front)
-- [ ] T013 [US2] Подготовить стратегию разрешения конфликта `kanban-cli/Kanban.sln` путем объединения всех проектов из обеих веток
-- [ ] T014 [US2] Определить стратегию разрешения других потенциальных конфликтов (при наличии)
-- [ ] T015 [US2] Сформировать пошаговый план слияния с командами git и проверками
-- [ ] T016 [US2] Актуализировать `specs/004-integrate-back-front/research.md` при необходимости с финальной стратегией
+- [X] T012 [US2] Определить порядок слияния на основе анализа (рекомендуется слить back первым, затем front)
+- [X] T013 [US2] Подготовить стратегию разрешения конфликта `kanban-cli/Kanban.sln` путем объединения всех проектов из обеих веток
+- [X] T014 [US2] Определить стратегию разрешения других потенциальных конфликтов (при наличии)
+- [X] T015 [US2] Сформировать пошаговый план слияния с командами git и проверками
+- [X] T016 [US2] Актуализировать `specs/004-integrate-back-front/research.md` при необходимости с финальной стратегией
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -88,23 +88,23 @@
 ### Implementation for User Story 3
 
 #### Merge dev/practice_05-back
-- [ ] T017 [US3] Выполнить слияние `dev/practice_05-back` в текущую ветку `integration/practice_05` (`git merge dev/practice_05-back`)
-- [ ] T018 [US3] Разрешить конфликты при слиянии (при наличии). Особое внимание на `kanban-cli/Kanban.sln`
-- [ ] T019 [US3] Проверить, что добавлены проекты UserProfile.Domain, UserProfile.Infrastructure, UserProfile.Api
-- [ ] T020 [US3] Закоммитить merge после разрешения конфликтов
+- [X] T017 [US3] Выполнить слияние `dev/practice_05-back` в текущую ветку `integration/practice_05` (`git merge dev/practice_05-back`)
+- [X] T018 [US3] Разрешить конфликты при слиянии (при наличии). Особое внимание на `kanban-cli/Kanban.sln`
+- [X] T019 [US3] Проверить, что добавлены проекты UserProfile.Domain, UserProfile.Infrastructure, UserProfile.Api
+- [X] T020 [US3] Закоммитить merge после разрешения конфликтов
 
 #### Merge dev/practice_05-front
-- [ ] T021 [US3] Выполнить слияние `dev/practice_05-front` в текущую ветку `integration/practice_05` (`git merge dev/practice_05-front`)
-- [ ] T022 [US3] Разрешить конфликты в `kanban-cli/Kanban.sln` путем объединения со списком проектов из back-ветки (должны остаться UserProfile.* + добавиться Kanban.Api)
-- [ ] T023 [US3] Проверить наличие директории `frontend/` и проекта `Kanban.Api` в solution
-- [ ] T024 [US3] Закоммитить merge после разрешения конфликтов
+- [X] T021 [US3] Выполнить слияние `dev/practice_05-front` в текущую ветку `integration/practice_05` (`git merge dev/practice_05-front`)
+- [X] T022 [US3] Разрешить конфликты в `kanban-cli/Kanban.sln` путем объединения со списком проектов из back-ветки (должны остаться UserProfile.* + добавиться Kanban.Api)
+- [X] T023 [US3] Проверить наличие директории `frontend/` и проекта `Kanban.Api` в solution
+- [X] T024 [US3] Закоммитить merge после разрешения конфликтов
 
 #### Verification
-- [ ] T025 [US3] Собрать решение: `cd kanban-cli && dotnet build Kanban.sln`
-- [ ] T026 [US3] Запустить тесты: `cd kanban-cli && dotnet test Kanban.sln`
-- [ ] T027 [US3] Проверить наличие всех проектов в solution: UserProfile.Domain, UserProfile.Infrastructure, UserProfile.Api, Kanban.Api, Kanban.Domain, Kanban.Infrastructure, Kanban.Cli, Kanban.Tests
-- [ ] T028 [US3] Проверить наличие `frontend/` директории с Vue приложением
-- [ ] T029 [US3] Зафиксировать успешность интеграции
+- [X] T025 [US3] Собрать решение: `cd kanban-cli && dotnet build Kanban.sln`
+- [X] T026 [US3] Запустить тесты: `cd kanban-cli && dotnet test Kanban.sln`
+- [X] T027 [US3] Проверить наличие всех проектов в solution: UserProfile.Domain, UserProfile.Infrastructure, UserProfile.Api, Kanban.Api, Kanban.Domain, Kanban.Infrastructure, Kanban.Cli, Kanban.Tests
+- [X] T028 [US3] Проверить наличие `frontend/` директории с Vue приложением
+- [X] T029 [US3] Зафиксировать успешность интеграции
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -114,10 +114,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T030 [P] Обновить `specs/004-integrate-back-front/quickstart.md` при необходимости для отражения итогового состояния
-- [ ] T031 [P] Проверить соответствие всех артефактов требованиям AGENTS.md (язык - русский, минимальные изменения)
-- [ ] T032 Выполнить финальную проверку согласно критериям успешности из spec.md
-- [ ] T033 Подготовить краткий отчет о результатах интеграции
+- [X] T030 [P] Обновить `specs/004-integrate-back-front/quickstart.md` при необходимости для отражения итогового состояния
+- [X] T031 [P] Проверить соответствие всех артефактов требованиям AGENTS.md (язык - русский, минимальные изменения)
+- [X] T032 Выполнить финальную проверку согласно критериям успешности из spec.md
+- [X] T033 Подготовить краткий отчет о результатах интеграции
 
 ---
 
