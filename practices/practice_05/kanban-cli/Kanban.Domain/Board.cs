@@ -42,7 +42,7 @@ public class Board
     public void MoveCard(Guid cardId, string toColumnName)
     {
         var found = FindCardWithColumn(cardId) ?? throw new InvalidOperationException($"Карточка '{cardId}' не найдена");
-        var (card, fromColumn) = found.Value;
+        var (card, fromColumn) = found;
 
         var toColumn = Columns.FirstOrDefault(c => string.Equals(c.Name, toColumnName, StringComparison.Ordinal))
             ?? throw new InvalidOperationException($"Колонка '{toColumnName}' не найдена");
