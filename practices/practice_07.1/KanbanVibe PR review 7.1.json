@@ -1,0 +1,846 @@
+{
+  "name": "KanbanVibe PR review 7.1",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "JaVf08KTEdjgy9JK",
+          "mode": "list",
+          "cachedResultName": "pr-stored"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "pr_number",
+              "keyValue": "={{ $('Back_pr-trigger').item.json.body.issue.number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        4752
+      ],
+      "id": "32ec8ffb-3636-41b4-8c8f-37a40e9782a4",
+      "name": "If row does not exist"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        4672
+      ],
+      "id": "6ea8b45f-bf71-4427-a90c-5f485f1dbdfb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "x1000sag",
+          "mode": "list"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "kanbanVibe-Back",
+          "mode": "list"
+        },
+        "issueNumber": "={{ $('Back_pr-trigger').item.json.body.issue.number }}",
+        "body": "=AI inline review завершён (hunks). См. вкладку Files changed."
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        2288,
+        4672
+      ],
+      "id": "d71223ba-2e0f-4f09-8332-bd4fc8d99897",
+      "name": "Post summary comment",
+      "webhookId": "9a218714-4d8a-4347-b9c1-18ab01701e89",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=PR #{{ $('Back_pr-trigger').item.json.body.issue.number }}\n{{ $('Back_pr-trigger').item.json.body.issue.title }}\n\nDiff:\n{{ $json.data || $json.body }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Второе независимое код-ревью KanbanVibe (.NET). Русский, markdown: Резюме, Блокеры, Важные замечания, Вердикт."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        736,
+        4992
+      ],
+      "id": "dbf80ff3-3ccc-4422-838f-b02b30f8c80a",
+      "name": "Basic LLM Chain other"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-3.5-flash-lite",
+          "mode": "list"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        5152
+      ],
+      "id": "4423d701-f5af-453f-8b26-edd11e6d35de",
+      "name": "OpenAI Chat Model other",
+      "credentials": {
+        "openAiApi": {
+          "id": "sXBsZAAFlsW7pNrS",
+          "name": "OpenAI account 48"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "x1000sag",
+          "mode": "list"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "kanbanVibe-Back",
+          "mode": "list"
+        },
+        "issueNumber": "={{ $('Back_pr-trigger').item.json.body.issue.number }}",
+        "body": "={{ $json.text }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        4992
+      ],
+      "id": "63373013-fb89-4ddf-918f-f8ad695426f4",
+      "name": "Post review comment other",
+      "webhookId": "e8626d02-bfbe-4a71-83e6-bfa7d7e5eca3",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "JaVf08KTEdjgy9JK",
+          "mode": "list",
+          "cachedResultName": "pr-stored"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reviewed_at": "={{ $now }}",
+            "pr_number": "={{ $('Back_pr-trigger').item.json.body.issue.number }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "pr_number",
+              "displayName": "pr_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reviewed_at",
+              "displayName": "reviewed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2448,
+        4672
+      ],
+      "id": "1a1c706f-5d20-4321-b452-e52903474576",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { done: true } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        4672
+      ],
+      "id": "46f640d8-0867-4ebc-b90b-daa792828fec",
+      "name": "After all hunks"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/pulls/{{ $('Back_pr-trigger').item.json.body.issue.number }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.diff"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        4592
+      ],
+      "id": "eab82c0d-efb2-4d98-8f8a-ebdf2c3788bf",
+      "name": "Get PR diff1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/pulls/{{ $('Back_pr-trigger').item.json.body.issue.number }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        4752
+      ],
+      "id": "dd8e714f-af5f-45c6-90ab-84d434e528ee",
+      "name": "Get PR meta1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MAX_HUNKS = 8;\nconst MAX_PATCH_CHARS = 3500;\nconst diffItem = $('Get PR diff1').first().json;\nconst diffText = (typeof diffItem.data === 'string' && diffItem.data) || (typeof diffItem.body === 'string' && diffItem.body) || '';\nconst trigger = $('Back_pr-trigger').first().json;\nconst prNumber = trigger.body.issue.number;\nconst meta = $('Get PR meta1').first().json;\nlet commitId = meta.head?.sha || meta.body?.head?.sha || meta.data?.head?.sha;\nif (!commitId) throw new Error('commit_id not found — check Get PR meta');\nif (!diffText.trim()) throw new Error('Empty diff');\nconst hunks = [];\nlet file = '';\nlet current = null;\nfor (const line of diffText.split('\\n')) {\n  if (line.startsWith('diff --git ')) {\n    const m = line.match(/ b\\/(.+)$/);\n    file = m ? m[1] : '';\n    current = null;\n    continue;\n  }\n  if (line.startsWith('@@')) {\n    const m = line.match(/@@ -\\d+(?:,\\d+)? \\+(\\d+)(?:,(\\d+))? @@/);\n    const startLine = m ? parseInt(m[1], 10) : 1;\n    current = { path: file, line: startLine, patchLines: [line] };\n    hunks.push(current);\n    continue;\n  }\n  if (current && (line.startsWith(' ') || line.startsWith('+') || line.startsWith('-'))) {\n    if (line.startsWith('+++') || line.startsWith('---')) continue;\n    current.patchLines.push(line);\n    if (line.startsWith('+')) {\n      current._lineCounter = (current._lineCounter ?? current.line - 1) + 1;\n      current.line = current._lineCounter;\n    }\n  }\n}\nconst items = [];\nfor (const h of hunks) {\n  const patch = h.patchLines.join('\\n');\n  const hasChange = patch.split('\\n').some((l) => l.startsWith('+') && !l.startsWith('+++'));\n  if (!h.path || !hasChange) continue;\n  if (h.path.includes('package-lock')) continue;\n  items.push({\n    path: h.path,\n    line: Math.max(1, h.line),\n    patch: patch.slice(0, MAX_PATCH_CHARS),\n    commit_id: commitId,\n    pr_number: prNumber,\n  });\n  if (items.length >= MAX_HUNKS) break;\n}\nif (!items.length) throw new Error('No hunks');\nreturn items.map((json) => ({ json }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        4672
+      ],
+      "id": "8243ae55-86e9-4302-b334-0a27daffcd8b",
+      "name": "Split diff into hunks1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "hunk-patch",
+              "name": "patch",
+              "value": "={{ $json.patch }}",
+              "type": "string"
+            },
+            {
+              "id": "hunk-path",
+              "name": "path",
+              "value": "={{ $json.path }}",
+              "type": "string"
+            },
+            {
+              "id": "hunk-line",
+              "name": "line",
+              "value": "={{ $json.line }}",
+              "type": "number"
+            },
+            {
+              "id": "hunk-commit",
+              "name": "commit_id",
+              "value": "={{ $json.commit_id }}",
+              "type": "string"
+            },
+            {
+              "id": "hunk-pr",
+              "name": "pr_number",
+              "value": "={{ $json.pr_number }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1536,
+        4672
+      ],
+      "id": "709050c7-9b24-40ac-93e0-c9cfffa99d16",
+      "name": "Hunk context1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.patch }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Ревью одного hunk diff KanbanVibe (.NET). 2–4 предложения по patch. Только факты из patch."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Файл: {{ $json.path }}, строка {{ $json.line }}\n\n{{ $json.patch }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1712,
+        4672
+      ],
+      "id": "bee665cf-27c7-4ca2-b843-e5c68db07462",
+      "name": "LLM hunk review1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek/deepseek-v4.1-flash",
+          "mode": "list"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1712,
+        4832
+      ],
+      "id": "a9ba8efb-b1f9-463e-a418-e1cce4a6ceb9",
+      "name": "OpenAI Chat Model hunk1",
+      "credentials": {
+        "openAiApi": {
+          "id": "sXBsZAAFlsW7pNrS",
+          "name": "OpenAI account 48"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/pulls/{{ $('Hunk context1').item.json.pr_number }}/comments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"body\": {{ JSON.stringify($json.text || $json.output || $json.response?.text || 'Замечание') }},\n  \"commit_id\": {{ JSON.stringify($('Hunk context1').item.json.commit_id) }},\n  \"path\": {{ JSON.stringify($('Hunk context1').item.json.path) }},\n  \"line\": {{ $('Hunk context1').item.json.line }},\n  \"side\": \"RIGHT\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        4672
+      ],
+      "id": "e3f160ee-e866-4ef3-8a40-3bc336613d87",
+      "name": "Post inline review comment1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/pulls/{{ $('Back_pr-trigger').item.json.body.issue.number }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.diff"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        4992
+      ],
+      "id": "5caf7dbb-f220-4614-b9de-80d47c9c12c6",
+      "name": "Get PR diff other1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "JaVf08KTEdjgy9JK",
+          "mode": "list",
+          "cachedResultName": "pr-stored"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reviewed_at": "={{ $now }}",
+            "pr_number": "={{ $('Back_pr-trigger').item.json.body.issue.number }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        4992
+      ],
+      "id": "c03032c8-ab78-4f25-9a1f-d0db193b45d3",
+      "name": "Insert row other1"
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "x1000sag",
+          "mode": "list"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "kanbanVibe-Back",
+          "mode": "list"
+        },
+        "events": [
+          "pull_request",
+          "issue_comment"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        4880
+      ],
+      "id": "d587a08e-ae01-4132-adf8-71494df85979",
+      "name": "Back_pr-trigger",
+      "webhookId": "REPLACE_AFTER_IMPORT",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "created",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "aa789729-5142-4635-bf94-a55949395ca5"
+            },
+            {
+              "leftValue": "={{ $json.body.issue.pull_request }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "id": "6910dabc-b4a8-462b-9e59-2b1ccf1f3cc5"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -16,
+        4880
+      ],
+      "id": "db30ed75-bb9b-4732-af11-6f4149e2f4c6",
+      "name": "filter"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.comment.body }}",
+                    "rightValue": "/make_ai_review",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "2d008217-93cb-475b-91eb-bdc5736c8388"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/make_ai_review"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.comment.body }}",
+                    "rightValue": "/make_other_ai_review",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "356e9e73-676f-424b-9b9d-15feb4bec9e8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/make_other_ai_review"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        4864
+      ],
+      "id": "b043c82b-81eb-4667-a668-5db8a4895d1f",
+      "name": "Switch on commands"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If row does not exist": {
+      "main": [
+        [
+          {
+            "node": "Get PR diff1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get PR meta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Split diff into hunks1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post summary comment": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model other": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain other",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain other": {
+      "main": [
+        [
+          {
+            "node": "Post review comment other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post review comment other": {
+      "main": [
+        [
+          {
+            "node": "Insert row other1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "After all hunks": {
+      "main": [
+        [
+          {
+            "node": "Post summary comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PR diff1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PR meta1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split diff into hunks1": {
+      "main": [
+        [
+          {
+            "node": "Hunk context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hunk context1": {
+      "main": [
+        [
+          {
+            "node": "LLM hunk review1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM hunk review1": {
+      "main": [
+        [
+          {
+            "node": "Post inline review comment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model hunk1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LLM hunk review1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post inline review comment1": {
+      "main": [
+        [
+          {
+            "node": "After all hunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PR diff other1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Back_pr-trigger": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "Switch on commands",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on commands": {
+      "main": [
+        [
+          {
+            "node": "If row does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get PR diff other1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6c023ad1-32da-4225-8b2c-adf311a9b57f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "68dbbb4e8fa686c3fd4e9982ade6836edb66976f207553e7ac22df961581c78c"
+  },
+  "nodeGroups": [],
+  "id": "WkjL3E7iNd34V9IH",
+  "tags": []
+}
