@@ -1,0 +1,1342 @@
+{
+  "name": "KanbanVibe issue classifier (sub)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        1072
+      ],
+      "id": "982ad2b0-cce7-4f75-9e78-f47431b77c3a",
+      "name": "Monday 09:00"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        1248
+      ],
+      "id": "b385434f-1ade-46e8-a5ca-363fa1ef880c",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.github.com/search/issues?per_page=100&q=' + encodeURIComponent('repo:x1000sag/kanbanVibe-Back ' + 'is:issue created:>=' + $now.minus({ days: 7 }).toFormat('yyyy-MM-dd')) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        928
+      ],
+      "id": "77fb040e-58f7-4d35-98f4-6a585e9d819e",
+      "name": "Issues opened",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.github.com/search/issues?per_page=100&q=' + encodeURIComponent('repo:x1000sag/kanbanVibe-Back ' + 'is:issue closed:>=' + $now.minus({ days: 7 }).toFormat('yyyy-MM-dd')) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        1088
+      ],
+      "id": "f3fdac7c-0980-4fed-a09f-22cb55b6faa2",
+      "name": "Issues closed",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.github.com/search/issues?per_page=100&q=' + encodeURIComponent('repo:x1000sag/kanbanVibe-Back ' + 'is:pr created:>=' + $now.minus({ days: 7 }).toFormat('yyyy-MM-dd')) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        1248
+      ],
+      "id": "4dc0f363-c236-4c6c-b798-89fef5518fb3",
+      "name": "PRs opened",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.github.com/search/issues?per_page=100&q=' + encodeURIComponent('repo:x1000sag/kanbanVibe-Back ' + 'is:issue updated:>=' + $now.minus({ days: 7 }).toFormat('yyyy-MM-dd')) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        1408
+      ],
+      "id": "71ecd804-be38-4311-a133-9c265da60868",
+      "name": "Issues updated",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1904,
+        1152
+      ],
+      "id": "273fb112-d3d1-4f53-997f-4ad57b266372",
+      "name": "Wait for four",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "FbPEaEk3hxV6Sxib",
+          "mode": "list",
+          "cachedResultName": "weekly-stats",
+          "cachedResultUrl": "/projects/YUjnuNcYjidm3d6K/datatables/FbPEaEk3hxV6Sxib"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2112,
+        1152
+      ],
+      "id": "656581c9-f3fc-498d-b231-e8d58ee0d2e0",
+      "name": "Previous stats",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const since = $now.minus({ days: 7 }).toFormat('yyyy-MM-dd');\nconst weekStart = since;\nfunction firstJson(name) {\n  try {\n    return $(name).first().json || {};\n  } catch (e) {\n    return {};\n  }\n}\nfunction itemsOf(name) {\n  const j = firstJson(name);\n  return Array.isArray(j.items) ? j.items : [];\n}\nconst opened = itemsOf('Issues opened');\nconst closed = itemsOf('Issues closed');\nconst prs = itemsOf('PRs opened');\nconst labeled = itemsOf('Issues updated');\nfunction byAuthor(list) {\n  const m = {};\n  for (const it of list) {\n    const login = it.user?.login || 'unknown';\n    m[login] = (m[login] || 0) + 1;\n  }\n  return m;\n}\nfunction byLabel(list) {\n  const m = { bug: 0, task: 0, feature: 0, 'needs-triage': 0, other: 0 };\n  for (const it of list) {\n    const names = (it.labels || []).map((l) => (typeof l === 'string' ? l : l.name));\n    let hit = false;\n    for (const n of ['bug', 'task', 'feature', 'needs-triage']) {\n      if (names.includes(n)) { m[n] += 1; hit = true; }\n    }\n    if (!hit) m.other += 1;\n  }\n  return m;\n}\nconst authors = byAuthor(opened);\nconst types = byLabel(labeled.length ? labeled : opened);\nlet prev = null;\ntry {\n  const rows = $('Previous stats').all().map((i) => i.json).filter((r) => r && r.week_start);\n  rows.sort((a, b) => String(b.week_start).localeCompare(String(a.week_start)));\n  prev = rows[0] || null;\n} catch (e) { prev = null; }\nconst delta = (cur, key) => {\n  if (!prev || prev[key] === undefined || prev[key] === null || prev[key] === '') return 'n/a';\n  const d = Number(cur) - Number(prev[key]);\n  return (d > 0 ? '+' : '') + d;\n};\nconst authorRows = Object.entries(authors).sort((a, b) => b[1] - a[1])\n  .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('') || '<tr><td colspan=\"2\">нет</td></tr>';\nconst typeRows = Object.entries(types).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');\nconst html = `<h2>KanbanVibe за неделю с ${weekStart}</h2>\n<table border=\"1\" cellpadding=\"6\"><tr><th></th><th>Сейчас</th><th>Δ к прошлой</th></tr>\n<tr><td>Issues opened</td><td>${opened.length}</td><td>${delta(opened.length, 'opened')}</td></tr>\n<tr><td>Issues closed</td><td>${closed.length}</td><td>${delta(closed.length, 'closed')}</td></tr>\n<tr><td>PRs opened</td><td>${prs.length}</td><td>${delta(prs.length, 'prs')}</td></tr>\n</table>\n<h3>По типу</h3><table border=\"1\" cellpadding=\"6\"><tr><th>label</th><th>count</th></tr>${typeRows}</table>\n<h3>По автору (opened)</h3><table border=\"1\" cellpadding=\"6\"><tr><th>login</th><th>count</th></tr>${authorRows}</table>\n<h3>AI</h3><p>{{AI}}</p>`;\nreturn [{ json: {\n  week_start: weekStart,\n  opened: opened.length,\n  closed: closed.length,\n  prs: prs.length,\n  by_type: types,\n  by_author: authors,\n  html,\n}}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        1152
+      ],
+      "id": "156e31c9-8674-4366-b232-fb529ce55eeb",
+      "name": "Build report",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Неделя с {{ $json.week_start }}. Opened {{ $json.opened }}, closed {{ $json.closed }}, PRs {{ $json.prs }}. По типам: {{ JSON.stringify($json.by_type) }}. По авторам: {{ JSON.stringify($json.by_author) }}. Напиши 4-6 предложений по-русски: что произошло и на что смотреть. Без markdown.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Краткий комментарий к еженедельной статистике GitHub-репозитория KanbanVibe. Только факты из цифр, которые пришли в сообщении пользователя. 4-6 предложений по-русски, без markdown."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2528,
+        1152
+      ],
+      "id": "2ae4faad-fc8c-4c5a-8adf-eaf3958c76e5",
+      "name": "Week comment"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "gemini-3.1-flash-lite"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2544,
+        1392
+      ],
+      "id": "f787edbc-b747-4645-a402-ac1a37fb7091",
+      "name": "OpenAI Chat Model week",
+      "credentials": {
+        "openAiApi": {
+          "id": "sXBsZAAFlsW7pNrS",
+          "name": "OpenAI account 48"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $('Build report').first().json;\nconst note = $json.text || $json.output || $json.response?.text || '';\nreturn [{ json: { ...base, summary: note, html: String(base.html).replace('{{AI}}', note || '—') } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        1152
+      ],
+      "id": "dc851841-f74a-44ca-ba91-a0140b46d6d2",
+      "name": "Put AI into HTML"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "FbPEaEk3hxV6Sxib",
+          "mode": "list",
+          "cachedResultName": "weekly-stats",
+          "cachedResultUrl": "/projects/YUjnuNcYjidm3d6K/datatables/FbPEaEk3hxV6Sxib"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "week_start": "={{ $json.week_start }}",
+            "opened": "={{ $json.opened }}",
+            "closed": "={{ $json.closed }}",
+            "prs": "={{ $json.prs }}",
+            "summary": "={{ $json.summary }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3024,
+        1152
+      ],
+      "id": "4f3f262e-77c2-4f7b-8560-ad00a6fd17fc",
+      "name": "Save week"
+    },
+    {
+      "parameters": {
+        "fromEmail": "REPLACE_WITH_YOUR_EMAIL",
+        "toEmail": "REPLACE_WITH_YOUR_EMAIL",
+        "subject": "KanbanVibe: issues за неделю",
+        "html": "={{ $('Put AI into HTML').item.json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3232,
+        1152
+      ],
+      "id": "d97aa9fc-0697-4668-b789-c70fc5b55aab",
+      "name": "Send report",
+      "webhookId": "6cb32bdb-9600-427e-811a-c24a64d3dcda"
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "x1000sag",
+          "mode": "list"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "kanbanVibe-Back",
+          "mode": "list"
+        },
+        "events": [
+          "issues"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        64
+      ],
+      "id": "450c52fe-e555-44f3-afdc-4c7f6a934c5a",
+      "name": "Github Trigger1",
+      "webhookId": "REPLACE_AFTER_IMPORT",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "opened",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        64
+      ],
+      "id": "54d28d1b-c4bf-48bc-b9be-1ed57050f70f",
+      "name": "If opened1"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "uAEqU0tS5bgLldpo",
+          "mode": "list",
+          "cachedResultName": "issue-classified",
+          "cachedResultUrl": "/projects/YUjnuNcYjidm3d6K/datatables/uAEqU0tS5bgLldpo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "issue_number",
+              "keyValue": "={{ $json.body.issue.number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        64
+      ],
+      "id": "e72fd972-bbb9-4c04-b4c4-7262ec16bfde",
+      "name": "If issue not classified1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('Github Trigger1').item.json.body.issue.author_association }}",
+              "rightValue": "FIRST_TIME_CONTRIBUTOR",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        -112
+      ],
+      "id": "99bb773d-cd5f-4be5-a83d-f970578ce6fb",
+      "name": "If first-time contributor1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"labels\": [\"first-time-contributor\"]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2288,
+        -112
+      ],
+      "id": "d484d217-febc-4d95-bcc2-fbfc228dcf74",
+      "name": "Label first-time1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Xwkh6fydEOx5pJW9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Xwkh6fydEOx5pJW9",
+          "cachedResultName": "KanbanVibe issue classifier (sub)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        112
+      ],
+      "id": "5a6937b0-fa8a-4f68-83c0-9ba25470f5f7",
+      "name": "Classify issue1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.confidence }}",
+              "rightValue": 0.55,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "id": "41a68b03-dc47-43c6-9225-532c1468a6fc"
+            },
+            {
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "unknown",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "712c9275-49c7-475a-9903-9f779bc5a1ae"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        112
+      ],
+      "id": "063da302-e7d4-43bd-ae2d-32588581f2cd",
+      "name": "If needs triage1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"labels\": [\"needs-triage\"]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2528,
+        32
+      ],
+      "id": "5c6c5786-8410-42a0-a5e8-6a4cc16acea3",
+      "name": "Label needs-triage1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Classify issue1').item.json.type }}",
+                    "rightValue": "bug",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Classify issue1').item.json.type }}",
+                    "rightValue": "task",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Classify issue1').item.json.type }}",
+                    "rightValue": "feature",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2528,
+        224
+      ],
+      "id": "983feab2-87db-4f66-9e36-fc19e13f614c",
+      "name": "Switch type1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"labels\": [\"bug\"]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2768,
+        112
+      ],
+      "id": "2f36c7e2-3ac6-4371-a5ca-747ab3e5c011",
+      "name": "Label bug1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"labels\": [\"task\"]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2768,
+        256
+      ],
+      "id": "db301762-11fd-4978-9a0f-38514385b57c",
+      "name": "Label task1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"labels\": [\"feature\"]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2768,
+        384
+      ],
+      "id": "c895a966-eec8-4ec3-8a7e-f01bae0f297d",
+      "name": "Label feature1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/x1000sag/kanbanVibe-Back/issues/{{ $('Github Trigger1').item.json.body.issue.number }}/comments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ body: 'Классификация: ' + $('Classify issue1').item.json.type + ' (confidence ' + $('Classify issue1').item.json.confidence + ')' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3008,
+        256
+      ],
+      "id": "8ff47b7f-2151-4fdc-ab17-47edf6772d29",
+      "name": "Post class comment1",
+      "credentials": {
+        "githubApi": {
+          "id": "4hH49oqElO4yDh1i",
+          "name": "GitHub account 57"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "uAEqU0tS5bgLldpo",
+          "mode": "list",
+          "cachedResultName": "issue-classified",
+          "cachedResultUrl": "/projects/YUjnuNcYjidm3d6K/datatables/uAEqU0tS5bgLldpo"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "issue_number": "={{ $('Github Trigger1').item.json.body.issue.number }}",
+            "type": "={{ $('Classify issue1').item.json.type }}",
+            "classified_at": "={{ $now }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3248,
+        144
+      ],
+      "id": "12ff7ed8-4718-47ca-b672-7e529b78891e",
+      "name": "Insert classified1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        576
+      ],
+      "id": "ed0a27de-38ac-4cb1-9222-c744fdefa409",
+      "name": "When called"
+    },
+    {
+      "parameters": {
+        "jsCode": "const title = String($json.title ?? '').trim();\nconst body = String($json.body ?? '').trim();\nconst text = `Заголовок: ${title}\\n\\nТекст issue:\\n${body || '(пусто)'}`;\nreturn [{ json: { title, body, text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        576
+      ],
+      "id": "2d03b30c-9621-462d-8b02-c5ee6ce1aa3c",
+      "name": "Prepare issue text"
+    },
+    {
+      "parameters": {
+        "jsCode": "function has(lower, word) { return lower.includes(word); }\nfunction scoreHeuristic(title, body) {\n  const lower = `${title}\\n${body}`.toLowerCase();\n  const titleLower = title.toLowerCase();\n  let bug = 0, task = 0, feature = 0;\n  if (has(lower, 'вместо')) bug += 2;\n  if (has(lower, 'ожидание') && has(lower, 'факт')) bug += 3;\n  else if (has(lower, 'ожидание')) bug += 1;\n  if (has(lower, 'возвращает')) bug += 2;\n  if (/\\b\\d{3}\\b/.test(lower) && (has(lower, 'вместо') || /nick_invalid|store_unavailable/i.test(lower))) bug += 3;\n  if (/(?:post|get|put|patch|delete)\\s+\\//i.test(lower) && (has(lower, 'возвращает') || has(lower, 'вместо'))) bug += 2;\n  if (/netsdk\\d+/i.test(lower)) bug += 2;\n  if (has(lower, 'падает') || /не\\s+работает/.test(lower)) bug += 1;\n  if (has(lower, 'воспроизвед')) bug += 1;\n  if (has(titleLower, 'возвращает') && has(titleLower, 'вместо')) bug += 5;\n  if (has(titleLower, 'падает')) bug += 2;\n  if (/обновить.*\\.md|manual-test|документац|подтянуть.*тег/i.test(lower)) task += 2;\n  if (/(?:слить|merge).*(?:ветк|branch)/i.test(lower)) task += 2;\n  if (/рефактор|ci\\/cd|зависимост/i.test(lower)) task += 1;\n  if (has(lower, 'добавить') && !has(titleLower, 'вместо')) feature += 1;\n  if (/новая\\s+возможност|фильтр\\s+карточ|интеграц|mock.*production/i.test(lower)) feature += 2;\n  if (/фильтр\\s+карточек\\s+по\\s+метке/i.test(lower)) feature += 3;\n  const entries = [['bug', bug], ['task', task], ['feature', feature]].sort((a, b) => b[1] - a[1]);\n  const [bestType, bestScore] = entries[0];\n  if (bestScore < 2) return null;\n  if (entries[1][1] === bestScore) return null;\n  return { type: bestType, confidence: Math.min(0.99, 0.55 + 0.05 * bestScore) };\n}\nconst title = String($json.title ?? '').trim();\nconst body = String($json.body ?? '').trim();\nconst text = String($json.text ?? `Заголовок: ${title}\\n\\nТекст issue:\\n${body || '(пусто)'}`);\nconst h = scoreHeuristic(title, body);\nlet type = 'unknown';\nlet confidence = 0.3;\nlet fromHeuristic = false;\nif (h) {\n  type = h.type;\n  confidence = h.confidence;\n  if (['bug', 'task', 'feature'].includes(type) && confidence >= 0.55) fromHeuristic = true;\n}\nreturn [{ json: { title, body, text, type, confidence, fromHeuristic } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        576
+      ],
+      "id": "aa53a679-99f2-4713-9bc9-e2a6e259a73c",
+      "name": "Heuristic classify"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.fromHeuristic }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        576
+      ],
+      "id": "b089799c-a5ba-4560-b5d5-adc0d62c2b73",
+      "name": "If heuristic confident"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { type, confidence } = $input.first().json;\nreturn [{ json: { type, confidence } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        432
+      ],
+      "id": "c8dc79d0-3415-4195-bfc8-3c6408a26f25",
+      "name": "Return heuristic"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"type\": {\n      \"type\": \"string\",\n      \"description\": \"Exactly one of: bug, task, feature, unknown.\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"description\": \"0.85-0.99 when type is clearly bug, task, or feature; below 0.8 only with unknown.\"\n    }\n  },\n  \"required\": [\n    \"type\",\n    \"confidence\"\n  ]\n}",
+        "options": {
+          "systemPromptTemplate": "Ты классификатор GitHub Issue репозитория KanbanVibe (backend Kanban.Api, frontend Vue).\nВерни только поля type и confidence по схеме.\n\ntype — ровно одно из: bug, task, feature, unknown.\n- bug: дефект, регрессия, неверный HTTP-код, расхождение ожидание/факт, шаги воспроизведения.\n- task: документация, тесты, CI/CD, рефакторинг, слияние веток, зависимости, без новой пользовательской возможности.\n- feature: новая возможность или заметное улучшение для пользователя.\n- unknown: только если ни заголовок, ни текст не дают одного типа.\n\nПравила confidence:\n- Ясный bug/task/feature: 0.85–0.99.\n- unknown: ниже 0.8.\n- Заголовок «возвращает X вместо Y» или неверный код ответа — это bug, не unknown.\n\nПримеры:\nbug: «POST /v1/accounts … 503 вместо nick_invalid» → bug, 0.97\ntask: «Обновить manual-test.md» → task, 0.93\nfeature: «Фильтр карточек по метке» → feature, 0.93\nunknown: «посмотрите пожалуйста» → unknown, 0.35"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.1,
+      "position": [
+        2448,
+        688
+      ],
+      "id": "9ae04de6-8f6e-4602-aa99-9470c996b2e8",
+      "name": "Extract issue type",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek-v4.1-flash",
+          "mode": "list"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2448,
+        896
+      ],
+      "id": "ff342729-915c-41c5-ab77-9af603bb5fc3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sXBsZAAFlsW7pNrS",
+          "name": "OpenAI account 48"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function has(lower, word) { return lower.includes(word); }\nfunction scoreHeuristic(title, body) {\n  const lower = `${title}\\n${body}`.toLowerCase();\n  const titleLower = title.toLowerCase();\n  let bug = 0, task = 0, feature = 0;\n  if (has(lower, 'вместо')) bug += 2;\n  if (has(lower, 'ожидание') && has(lower, 'факт')) bug += 3;\n  else if (has(lower, 'ожидание')) bug += 1;\n  if (has(lower, 'возвращает')) bug += 2;\n  if (/\\b\\d{3}\\b/.test(lower) && (has(lower, 'вместо') || /nick_invalid|store_unavailable/i.test(lower))) bug += 3;\n  if (/(?:post|get|put|patch|delete)\\s+\\//i.test(lower) && (has(lower, 'возвращает') || has(lower, 'вместо'))) bug += 2;\n  if (/netsdk\\d+/i.test(lower)) bug += 2;\n  if (has(lower, 'падает') || /не\\s+работает/.test(lower)) bug += 1;\n  if (has(lower, 'воспроизвед')) bug += 1;\n  if (has(titleLower, 'возвращает') && has(titleLower, 'вместо')) bug += 5;\n  if (has(titleLower, 'падает')) bug += 2;\n  if (/обновить.*\\.md|manual-test|документац|подтянуть.*тег/i.test(lower)) task += 2;\n  if (/(?:слить|merge).*(?:ветк|branch)/i.test(lower)) task += 2;\n  if (/рефактор|ci\\/cd|зависимост/i.test(lower)) task += 1;\n  if (has(lower, 'добавить') && !has(titleLower, 'вместо')) feature += 1;\n  if (/новая\\s+возможност|фильтр\\s+карточ|интеграц|mock.*production/i.test(lower)) feature += 2;\n  if (/фильтр\\s+карточек\\s+по\\s+метке/i.test(lower)) feature += 3;\n  const entries = [['bug', bug], ['task', task], ['feature', feature]].sort((a, b) => b[1] - a[1]);\n  const [bestType, bestScore] = entries[0];\n  if (bestScore < 2) return null;\n  if (entries[1][1] === bestScore) return null;\n  return { type: bestType, confidence: Math.min(0.99, 0.55 + 0.05 * bestScore) };\n}\nfunction parseJsonish(value) {\n  if (typeof value !== 'string') return value;\n  const trimmed = value.trim().replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/, '');\n  try { return JSON.parse(trimmed); } catch (e) { return value; }\n}\nfunction classificationFrom(value, depth) {\n  if (depth > 6 || value == null) return null;\n  const parsed = parseJsonish(value);\n  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;\n  const nested = parsed.output ?? parsed.result ?? parsed.data ?? parsed.response ?? parsed.text;\n  const inner = nested != null ? classificationFrom(nested, depth + 1) : null;\n  const ownType = parsed.type ?? parsed.label ?? parsed.category;\n  const ownConfidence = parsed.confidence ?? parsed.score;\n  if (inner && ownType == null) return inner;\n  if (ownType != null || ownConfidence != null) {\n    return { type: ownType ?? inner?.type, confidence: ownConfidence ?? inner?.confidence };\n  }\n  return inner;\n}\nconst j = classificationFrom($input.first().json, 0) || $input.first().json || {};\nlet rawType = String(j.type ?? 'unknown').toLowerCase().trim();\nconst typeAliases = { defect: 'bug', баг: 'bug', дефект: 'bug', chore: 'task', enhancement: 'feature' };\nif (typeAliases[rawType]) rawType = typeAliases[rawType];\nconst words = { high: 0.92, medium: 0.6, low: 0.35, высокая: 0.92, средняя: 0.6, низкая: 0.35 };\nlet confidence = j.confidence;\nif (typeof confidence === 'string') {\n  const word = confidence.trim().toLowerCase();\n  confidence = Object.prototype.hasOwnProperty.call(words, word)\n    ? words[word]\n    : Number(word.replace('%', '').replace(',', '.'));\n} else confidence = Number(confidence);\nif (Number.isFinite(confidence) && confidence > 1 && confidence <= 100) confidence = confidence / 100;\nif (!Number.isFinite(confidence)) confidence = 0;\nconfidence = Math.max(0, Math.min(1, confidence));\nconst allowed = ['bug', 'task', 'feature'];\nlet type = allowed.includes(rawType) ? rawType : 'unknown';\nlet title = '';\nlet body = '';\nfor (const nodeName of ['Heuristic classify', 'Prepare issue text', 'When called']) {\n  try {\n    const src = $(nodeName).first().json;\n    title = String(src.title ?? title);\n    body = String(src.body ?? body);\n  } catch (e) {}\n}\nconst heuristic = scoreHeuristic(title, body);\nif (heuristic && (type === 'unknown' || confidence < 0.8)) {\n  type = heuristic.type;\n  confidence = Math.max(confidence, heuristic.confidence);\n} else if (heuristic && type === heuristic.type && confidence < 0.8) {\n  confidence = Math.max(confidence, heuristic.confidence);\n} else if (!heuristic && type === 'unknown' && confidence < 0.55) {\n  confidence = 0.3;\n}\nreturn [{ json: { type, confidence } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        688
+      ],
+      "id": "191a7840-d4ed-4768-9ab4-1dfd94b3c7af",
+      "name": "Normalize"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Monday 09:00": {
+      "main": [
+        [
+          {
+            "node": "Issues opened",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Issues closed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PRs opened",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Issues updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Issues opened",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Issues closed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PRs opened",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Issues updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Issues opened": {
+      "main": [
+        [
+          {
+            "node": "Wait for four",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Issues closed": {
+      "main": [
+        [
+          {
+            "node": "Wait for four",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "PRs opened": {
+      "main": [
+        [
+          {
+            "node": "Wait for four",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Issues updated": {
+      "main": [
+        [
+          {
+            "node": "Wait for four",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Wait for four": {
+      "main": [
+        [
+          {
+            "node": "Previous stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Previous stats": {
+      "main": [
+        [
+          {
+            "node": "Build report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build report": {
+      "main": [
+        [
+          {
+            "node": "Week comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model week": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Week comment",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Week comment": {
+      "main": [
+        [
+          {
+            "node": "Put AI into HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Put AI into HTML": {
+      "main": [
+        [
+          {
+            "node": "Save week",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save week": {
+      "main": [
+        [
+          {
+            "node": "Send report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Github Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If opened1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If opened1": {
+      "main": [
+        [
+          {
+            "node": "If issue not classified1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If issue not classified1": {
+      "main": [
+        [
+          {
+            "node": "If first-time contributor1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Classify issue1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If first-time contributor1": {
+      "main": [
+        [
+          {
+            "node": "Label first-time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify issue1": {
+      "main": [
+        [
+          {
+            "node": "If needs triage1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If needs triage1": {
+      "main": [
+        [
+          {
+            "node": "Label needs-triage1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label needs-triage1": {
+      "main": [
+        [
+          {
+            "node": "Insert classified1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch type1": {
+      "main": [
+        [
+          {
+            "node": "Label bug1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Label task1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Label feature1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label bug1": {
+      "main": [
+        [
+          {
+            "node": "Post class comment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label task1": {
+      "main": [
+        [
+          {
+            "node": "Post class comment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label feature1": {
+      "main": [
+        [
+          {
+            "node": "Post class comment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post class comment1": {
+      "main": [
+        [
+          {
+            "node": "Insert classified1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When called": {
+      "main": [
+        [
+          {
+            "node": "Prepare issue text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare issue text": {
+      "main": [
+        [
+          {
+            "node": "Heuristic classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Heuristic classify": {
+      "main": [
+        [
+          {
+            "node": "If heuristic confident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If heuristic confident": {
+      "main": [
+        [
+          {
+            "node": "Return heuristic",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract issue type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract issue type",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract issue type": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "dd502510-9430-4669-99fc-643e82029e55",
+  "meta": {
+    "instanceId": "68dbbb4e8fa686c3fd4e9982ade6836edb66976f207553e7ac22df961581c78c"
+  },
+  "nodeGroups": [],
+  "id": "Xwkh6fydEOx5pJW9",
+  "tags": []
+}
