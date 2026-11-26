@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kanban Board</title>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=Newsreader:opsz,wght@6..72,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-ui: "DM Sans", system-ui, sans-serif;
+      --font-display: "Newsreader", Georgia, serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --duration: 0.2s;
+      --radius-board: 28px;
+      --radius-card: 14px;
+      --radius-dialog: 20px;
+      --radius-chip: 8px;
+      --shadow-board: 0 32px 64px -12px oklch(0.25 0.02 280 / 0.35);
+      --shadow-card: 0 1px 2px oklch(0.2 0.02 50 / 0.06), 0 8px 24px oklch(0.2 0.02 50 / 0.05);
+      --shadow-card-hover: 0 12px 32px oklch(0.2 0.02 50 / 0.1);
+      --shadow-dialog: 0 28px 70px oklch(0.22 0.02 280 / 0.28);
+      --shadow-category: 0 1px 2px oklch(0.22 0.02 50 / 0.07), 0 3px 10px oklch(0.22 0.03 50 / 0.05);
+      --canvas: oklch(0.91 0.02 75);
+      --surface: #fff;
+      --ink: oklch(0.22 0.02 50);
+      --muted: oklch(0.52 0.02 60);
+      --line: oklch(0.9 0.01 80);
+      --accent: oklch(0.52 0.19 255);
+      --accent-hover: oklch(0.46 0.2 255);
+      --chip-todo: oklch(0.94 0.03 250);
+      --chip-todo-text: oklch(0.42 0.06 250);
+      --chip-progress: oklch(0.94 0.04 75);
+      --chip-progress-text: oklch(0.45 0.08 75);
+      --chip-done: oklch(0.94 0.04 155);
+      --chip-done-text: oklch(0.42 0.07 155);
+      --tag-ux-bg: oklch(0.94 0.03 45);
+      --tag-ux-text: oklch(0.42 0.06 45);
+      --tag-ui-bg: oklch(0.94 0.03 290);
+      --tag-ui-text: oklch(0.42 0.06 290);
+      --tag-test-bg: oklch(0.94 0.03 155);
+      --tag-test-text: oklch(0.42 0.06 155);
+      --tag-pm-bg: oklch(0.94 0.03 70);
+      --tag-pm-text: oklch(0.42 0.06 70);
+      --density-gap: 12px;
+      --card-pad: 20px;
+      --surround: oklch(0.32 0.02 280);
+    }
+
+    [data-theme="cool"] {
+      --canvas: oklch(0.92 0.015 260);
+      --chip-todo: oklch(0.93 0.03 260);
+    }
+
+    [data-density="compact"] {
+      --density-gap: 8px;
+      --card-pad: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -20%, oklch(0.85 0.04 255 / 0.15), transparent),
+        var(--surround);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 4vw, 40px);
+      text-wrap: pretty;
+    }
+
+    button, input, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    :focus { outline: none; }
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .app { width: min(1120px, 100%); }
+
+    .board {
+      background: var(--canvas);
+      border-radius: var(--radius-board);
+      padding: clamp(20px, 3vw, 28px);
+      box-shadow: var(--shadow-board);
+      border: 1px solid oklch(1 0 0 / 0.4);
+      container-type: inline-size;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 10px 14px 10px 16px;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+    }
+
+    .top-bar__logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .top-bar__mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, oklch(0.88 0.02 80), oklch(0.82 0.03 75));
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .top-bar__spacer { flex: 1; min-width: 8px; }
+
+    .btn-add-global {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 14px oklch(0.52 0.19 255 / 0.35);
+      transition: transform var(--duration) var(--ease), background var(--duration) var(--ease);
+    }
+
+    .btn-add-global:hover { background: var(--accent-hover); transform: scale(1.06); }
+    .btn-add-global:active { transform: scale(0.96); }
+
+    .btn-signin {
+      font-weight: 600;
+      font-size: 13px;
+      min-height: 40px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+    }
+
+    .btn-signin:hover {
+      background: oklch(0.97 0.01 80);
+      border-color: oklch(0.85 0.02 80);
+    }
+
+    .btn-signin--primary {
+      background: var(--ink);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .btn-signin--primary:hover { background: oklch(0.28 0.02 50); }
+
+    .profile-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 14px 4px 4px;
+      min-height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 500;
+      transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+    }
+
+    .profile-chip:hover { border-color: oklch(0.82 0.02 80); background: oklch(0.985 0.005 80); }
+
+    .profile-chip__avatar,
+    .profile-hero__avatar {
+      border-radius: 50%;
+      background: linear-gradient(135deg, oklch(0.75 0.08 255), oklch(0.65 0.12 290));
+      color: #fff;
+      font-weight: 600;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .profile-chip__avatar { width: 32px; height: 32px; font-size: 12px; }
+    .profile-hero__avatar { width: 56px; height: 56px; font-size: 20px; }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(16px, 2.5vw, 24px);
+      align-items: start;
+    }
+
+    @container (max-width: 720px) {
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    .column__head {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 7px 14px;
+      border-radius: var(--radius-chip);
+      box-shadow: var(--shadow-category);
+    }
+
+    .column__head--todo { background: var(--chip-todo); color: var(--chip-todo-text); }
+    .column__head--progress { background: var(--chip-progress); color: var(--chip-progress-text); }
+    .column__head--done { background: var(--chip-done); color: var(--chip-done-text); }
+
+    .column__stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--density-gap);
+      min-height: 48px;
+    }
+
+    .column__empty {
+      margin: 0;
+      padding: 18px 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-card);
+      padding: var(--card-pad);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-card);
+      transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    .card { cursor: grab; }
+    .card :is(a, button) { cursor: pointer; }
+
+    .card.is-dragging,
+    .card.is-dragging:hover {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .card-slot {
+      border-radius: var(--radius-card);
+      border: 1px dashed oklch(0.78 0.02 80);
+      background: oklch(0.95 0.012 80 / 0.7);
+    }
+
+    body.is-card-drag { user-select: none; cursor: grabbing; }
+    body.is-card-drag .column.is-drop .column__stack { border-radius: 12px; }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-category);
+    }
+
+    .tag--ux { background: var(--tag-ux-bg); color: var(--tag-ux-text); }
+    .tag--ui { background: var(--tag-ui-bg); color: var(--tag-ui-text); }
+    .tag--test { background: var(--tag-test-bg); color: var(--tag-test-text); }
+    .tag--pm { background: var(--tag-pm-bg); color: var(--tag-pm-text); }
+    .tag--custom { background: oklch(0.94 0.012 80); color: var(--ink); }
+
+    .card__title {
+      margin: 0 0 6px;
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 2.5vw, 1.55rem);
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .card__sub {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .card__link {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid oklch(0.52 0.19 255 / 0.35);
+    }
+
+    .card__link:hover { border-bottom-color: var(--accent); }
+
+    .card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .btn-edit {
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 32px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: oklch(0.98 0.005 80);
+      color: var(--ink);
+      transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+    }
+
+    .btn-edit:hover { background: #fff; border-color: oklch(0.82 0.02 80); }
+
+    .card__date {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Windows */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: oklch(0.22 0.02 280 / 0.46);
+      backdrop-filter: blur(8px);
+    }
+
+    .overlay[hidden] { display: none; }
+
+    .dialog {
+      position: relative;
+      width: min(520px, 100%);
+      max-height: min(860px, calc(100vh - 48px));
+      overflow: auto;
+      background: var(--surface);
+      border-radius: var(--radius-dialog);
+      padding: 28px 28px 22px;
+      border: 1px solid oklch(1 0 0 / 0.72);
+      box-shadow: var(--shadow-dialog);
+      animation: rise var(--duration) var(--ease);
+    }
+
+    .dialog--narrow { width: min(420px, 100%); }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .dialog__close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+    }
+
+    .dialog__close:hover { background: oklch(0.97 0.01 80); }
+
+    .dialog__kicker {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .dialog__title {
+      margin: 0 44px 20px 0;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .dialog__title--flush { margin-bottom: 4px; }
+
+    .field--title {
+      margin: 0 40px 16px 0;
+    }
+
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding-right: 40px;
+    }
+
+    .profile-hero .dialog__title { margin: 0; }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field[hidden] { display: none; }
+
+    .field__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: oklch(0.985 0.004 80);
+      padding: 12px 14px;
+      font-size: 15px;
+      line-height: 1.4;
+      transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+    }
+
+    .field textarea { min-height: 84px; resize: vertical; }
+
+    .field input:hover,
+    .field textarea:hover { border-color: oklch(0.82 0.02 80); }
+
+    .field input:focus,
+    .field textarea:focus {
+      background: #fff;
+      border-color: var(--accent);
+      outline: 2px solid oklch(0.52 0.19 255 / 0.35);
+      outline-offset: 1px;
+    }
+
+    .field.field--title input {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: clamp(1.7rem, 2.8vw, 2.15rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      padding: 8px 12px 10px;
+      color: var(--ink);
+    }
+
+    .field.field--title input::placeholder {
+      color: oklch(0.62 0.02 60);
+      font-weight: 500;
+    }
+
+    .field input[readonly] {
+      color: var(--muted);
+      background: oklch(0.96 0.008 80);
+    }
+
+    .field.is-invalid input,
+    .field.is-invalid textarea { border-color: var(--ink); }
+
+    .field__error {
+      display: none;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .field.is-invalid .field__error { display: block; }
+
+    .choice {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice__item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 6px 12px;
+      border-radius: var(--radius-chip);
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .choice--tags .choice__item {
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .choice__compose {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-height: 36px;
+      padding: 0 4px 0 10px;
+      border-radius: var(--radius-chip);
+      border: 1px dashed oklch(0.78 0.02 80);
+      background: #fff;
+    }
+
+    .choice__compose:focus-within {
+      border-style: solid;
+      border-color: var(--accent);
+    }
+
+    .field .choice__compose input {
+      width: 5.2rem;
+      min-height: 0;
+      margin: 0;
+      padding: 6px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .field .choice__compose input:hover,
+    .field .choice__compose input:focus {
+      border: 0;
+      outline: none;
+      background: transparent;
+    }
+
+    .field .choice__compose input::placeholder {
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .choice__commit {
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .choice__commit:hover { background: oklch(0.28 0.02 50); }
+    .choice__commit:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .choice__item input {
+      position: absolute;
+      opacity: 0;
+      inset: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .choice__item:hover { border-color: oklch(0.82 0.02 80); }
+
+    .choice__item:has(input:focus-visible) {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .choice__item--todo:has(input:checked) { background: var(--chip-todo); color: var(--chip-todo-text); border-color: transparent; }
+    .choice__item--progress:has(input:checked) { background: var(--chip-progress); color: var(--chip-progress-text); border-color: transparent; }
+    .choice__item--done:has(input:checked) { background: var(--chip-done); color: var(--chip-done-text); border-color: transparent; }
+    .choice__item--ux:has(input:checked) { background: var(--tag-ux-bg); color: var(--tag-ux-text); border-color: transparent; box-shadow: var(--shadow-category); }
+    .choice__item--ui:has(input:checked) { background: var(--tag-ui-bg); color: var(--tag-ui-text); border-color: transparent; box-shadow: var(--shadow-category); }
+    .choice__item--test:has(input:checked) { background: var(--tag-test-bg); color: var(--tag-test-text); border-color: transparent; box-shadow: var(--shadow-category); }
+    .choice__item--pm:has(input:checked) { background: var(--tag-pm-bg); color: var(--tag-pm-text); border-color: transparent; box-shadow: var(--shadow-category); }
+    .choice__item--custom:has(input:checked) { background: oklch(0.94 0.012 80); color: var(--ink); border-color: var(--ink); box-shadow: var(--shadow-category); }
+
+    .dialog__footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .dialog__footer .btn-text { margin-right: auto; }
+
+    .btn {
+      font-weight: 600;
+      font-size: 13px;
+      min-height: 40px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+    }
+
+    .btn--ghost {
+      background: #fff;
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .btn--ghost:hover { background: oklch(0.97 0.01 80); border-color: oklch(0.85 0.02 80); }
+    .btn--ink { background: var(--ink); color: #fff; }
+    .btn--ink:hover { background: oklch(0.28 0.02 50); }
+    .btn--block { width: 100%; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-text {
+      background: none;
+      border: none;
+      padding: 8px 2px;
+      min-height: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .btn-text:hover { color: var(--ink); }
+
+    .password-change { display: flex; flex-direction: column; gap: 14px; }
+    .password-change .btn-text { align-self: flex-start; min-height: 32px; padding-block: 2px; }
+    .password-fields:not([hidden]) { display: flex; flex-direction: column; gap: 14px; }
+
+    .auth-switch {
+      margin: 14px 0 0;
+      text-align: center;
+    }
+
+    .pane[hidden] { display: none; }
+
+    .tweaks {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 30;
+      font-size: 13px;
+    }
+
+    .tweaks__toggle {
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid oklch(0.4 0.02 280 / 0.3);
+      background: oklch(0.22 0.02 280);
+      color: #fff;
+      box-shadow: 0 8px 24px oklch(0 0 0 / 0.35);
+    }
+
+    .tweaks__panel {
+      display: none;
+      margin-bottom: 10px;
+      padding: 16px;
+      width: 240px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 16px 40px oklch(0 0 0 / 0.15);
+    }
+
+    .tweaks__panel.is-open { display: block; }
+
+    .tweaks__panel h2 {
+      margin: 0 0 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .tweaks__row { margin-bottom: 12px; }
+    .tweaks__row:last-child { margin-bottom: 0; }
+
+    .tweaks__row label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .tweaks__row select {
+      width: 100%;
+      font-family: inherit;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    [hidden] { display: none !important; }
+
+    /* Design sheet — four windows, for the Figma page */
+    .sheet { display: none; }
+
+    body[data-view="sheet"] {
+      display: block;
+      padding: 56px 48px 72px;
+      background: var(--surround);
+    }
+
+    body[data-view="sheet"] .app,
+    body[data-view="sheet"] .tweaks,
+    body[data-view="sheet"] .overlay { display: none !important; }
+
+    body[data-view="sheet"] .sheet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 36px 32px;
+      align-items: flex-start;
+      width: max-content;
+      max-width: 100%;
+    }
+
+    .scene { width: 600px; }
+
+    .scene__index {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: oklch(0.78 0.03 75);
+    }
+
+    .scene__name {
+      margin: 0 0 16px;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      color: oklch(0.96 0.01 80);
+    }
+
+    .scene__frame {
+      background: var(--canvas);
+      border-radius: var(--radius-board);
+      padding: 28px 24px 32px;
+      border: 1px solid oklch(1 0 0 / 0.35);
+      box-shadow: var(--shadow-board);
+    }
+
+    .scene .dialog {
+      width: 100%;
+      max-height: none;
+      animation: none;
+      box-shadow: var(--shadow-card);
+    }
+
+    @media (max-width: 720px) {
+      .dialog { padding: 22px 18px 16px; }
+      .scene { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body data-theme="warm" data-density="comfortable" data-auth="guest">
+  <h1 class="sr">Kanban Board</h1>
+
+  <div class="app" id="app">
+    <main class="board" aria-label="Kanban board">
+      <header class="top-bar">
+        <div class="top-bar__logo">
+          <div class="top-bar__mark" aria-hidden="true"></div>
+          <span>Board</span>
+        </div>
+        <div class="top-bar__spacer"></div>
+        <button type="button" class="btn-add-global" id="open-create" aria-label="Добавить карточку">+</button>
+        <div id="auth-guest">
+          <button type="button" class="btn-signin btn-signin--primary" id="open-auth">Войти</button>
+        </div>
+        <div id="auth-user" hidden>
+          <button type="button" class="profile-chip" id="open-profile">
+            <span class="profile-chip__avatar" id="chip-letter" aria-hidden="true">X</span>
+            <span id="chip-name">x1000sa</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="columns">
+        <section class="column" aria-labelledby="col-todo">
+          <h2 id="col-todo" class="column__head column__head--todo">To Do</h2>
+          <div class="column__stack" data-column="todo">
+            <article class="card" draggable="true" data-tag="ux" data-date="2024-07-08">
+              <span class="tag tag--ux">UX Design</span>
+              <h3 class="card__title">UX Design</h3>
+              <p class="card__sub">Map out onboarding steps</p>
+              <a class="card__link" href="#">Read more</a>
+              <footer class="card__footer">
+                <button type="button" class="btn-edit">Edit</button>
+                <time class="card__date" datetime="2024-07-08">8 Jul</time>
+              </footer>
+            </article>
+          </div>
+        </section>
+
+        <section class="column" aria-labelledby="col-progress">
+          <h2 id="col-progress" class="column__head column__head--progress">In Progress</h2>
+          <div class="column__stack" data-column="progress">
+            <article class="card" id="card-homepage" draggable="true" data-tag="ui" data-date="2024-07-06">
+              <span class="tag tag--ui">UI Design</span>
+              <h3 class="card__title">Design homepage mockup</h3>
+              <p class="card__sub">High-fidelity version for review</p>
+              <a class="card__link" href="#">Read more</a>
+              <footer class="card__footer">
+                <button type="button" class="btn-edit">Edit</button>
+                <time class="card__date" datetime="2024-07-06">6 Jul</time>
+              </footer>
+            </article>
+            <article class="card" draggable="true" data-tag="test" data-date="2024-07-09">
+              <span class="tag tag--test">Testing</span>
+              <h3 class="card__title">Test payment gateway</h3>
+              <p class="card__sub">Verify sandbox transactions</p>
+              <footer class="card__footer">
+                <button type="button" class="btn-edit">Edit</button>
+                <time class="card__date" datetime="2024-07-09">9 Jul</time>
+              </footer>
+            </article>
+          </div>
+        </section>
+
+        <section class="column" aria-labelledby="col-done">
+          <h2 id="col-done" class="column__head column__head--done">Done</h2>
+          <div class="column__stack" data-column="done">
+            <article class="card" draggable="true" data-tag="pm" data-date="2024-07-05">
+              <span class="tag tag--pm">Project Management</span>
+              <h3 class="card__title">Update project timeline</h3>
+              <p class="card__sub">Reflect new deadlines after sprint planning</p>
+              <footer class="card__footer">
+                <button type="button" class="btn-edit">Edit</button>
+                <time class="card__date" datetime="2024-07-05">5 Jul</time>
+              </footer>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+      <button type="button" class="dialog__close" id="dialog-close" aria-label="Закрыть">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4L4 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="pane" id="pane-card" data-mode="create">
+        <p class="dialog__kicker" id="card-kicker">Карточка</p>
+        <h2 class="sr" id="dialog-title">Новая карточка</h2>
+        <form class="form" id="card-form" novalidate>
+          <div class="field field--title" id="field-title">
+            <label class="sr" for="card-title">Название</label>
+            <input id="card-title" name="title" type="text" autocomplete="off" placeholder="Название" required />
+            <span class="field__error">Нужно название</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="card-body">Описание</label>
+            <textarea id="card-body" name="body"></textarea>
+          </div>
+          <div class="field">
+            <span class="field__label" id="label-tag">Категория</span>
+            <div class="choice choice--tags" id="tag-choices" role="radiogroup" aria-labelledby="label-tag">
+              <label class="choice__item choice__item--ux">UX Design<input type="radio" name="tag" value="ux" checked /></label>
+              <label class="choice__item choice__item--ui">UI Design<input type="radio" name="tag" value="ui" /></label>
+              <label class="choice__item choice__item--test">Testing<input type="radio" name="tag" value="test" /></label>
+              <label class="choice__item choice__item--pm">Project Management<input type="radio" name="tag" value="pm" /></label>
+              <div class="choice__compose">
+                <input id="tag-draft" type="text" maxlength="32" placeholder="Новая" aria-label="Новая категория" autocomplete="off" />
+                <button type="button" class="choice__commit" id="tag-commit" aria-label="Добавить категорию" disabled>+</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label" id="label-column">Колонка</span>
+            <div class="choice" role="radiogroup" aria-labelledby="label-column">
+              <label class="choice__item choice__item--todo">To Do<input type="radio" name="column" value="todo" checked /></label>
+              <label class="choice__item choice__item--progress">In Progress<input type="radio" name="column" value="progress" /></label>
+              <label class="choice__item choice__item--done">Done<input type="radio" name="column" value="done" /></label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="card-date">Дата</label>
+            <input id="card-date" name="date" type="date" />
+          </div>
+          <div class="dialog__footer">
+            <button type="button" class="btn-text" id="card-delete" hidden>Удалить</button>
+            <button type="button" class="btn btn--ghost" data-close>Отмена</button>
+            <button type="submit" class="btn btn--ink" id="card-submit">Создать</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="pane" id="pane-auth" hidden>
+        <div class="auth-brand">
+          <div class="top-bar__mark" aria-hidden="true"></div>
+          <span>Board</span>
+        </div>
+        <p class="dialog__kicker">Доска</p>
+        <h2 class="dialog__title" id="auth-title">Войти</h2>
+        <form class="form" id="auth-form" novalidate>
+          <div class="field" id="field-name" hidden>
+            <label class="field__label" for="auth-name">Имя</label>
+            <input id="auth-name" name="name" type="text" autocomplete="name" />
+            <span class="field__error">Нужно имя</span>
+          </div>
+          <div class="field" id="field-email">
+            <label class="field__label" for="auth-email">Логин</label>
+            <input id="auth-email" name="login" type="text" autocomplete="username" />
+            <span class="field__error">Нужен логин</span>
+          </div>
+          <div class="field" id="field-password">
+            <label class="field__label" for="auth-password">Пароль</label>
+            <input id="auth-password" name="password" type="password" autocomplete="current-password" />
+            <span class="field__error">Нужен пароль</span>
+          </div>
+          <button type="submit" class="btn btn--ink btn--block" id="auth-submit">Войти</button>
+        </form>
+        <p class="auth-switch">
+          <button type="button" class="btn-text" id="auth-toggle">Нет аккаунта — создать</button>
+        </p>
+      </div>
+
+      <div class="pane" id="pane-profile" hidden>
+        <div class="profile-hero">
+          <div class="profile-hero__avatar" id="profile-letter" aria-hidden="true">X</div>
+          <div>
+            <p class="dialog__kicker">Профиль</p>
+            <h2 class="dialog__title dialog__title--flush" id="profile-heading">x1000sa</h2>
+          </div>
+        </div>
+        <form class="form" id="profile-form" novalidate>
+          <div class="field" id="field-display">
+            <label class="field__label" for="profile-name">Имя на доске</label>
+            <input id="profile-name" name="display" type="text" autocomplete="nickname" value="x1000sa" />
+            <span class="field__error">Нужно имя</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="profile-email">Логин</label>
+            <input id="profile-email" type="text" value="x1000sa" readonly />
+          </div>
+          <div class="password-change">
+            <button type="button" class="btn-text" id="password-toggle" aria-expanded="false" aria-controls="password-fields">Сменить пароль</button>
+            <div class="password-fields" id="password-fields" hidden>
+              <div class="field" id="field-new-password">
+                <label class="field__label" for="profile-password">Новый пароль</label>
+                <input id="profile-password" type="password" autocomplete="new-password" />
+                <span class="field__error">Нужен пароль</span>
+              </div>
+              <div class="field" id="field-password-repeat">
+                <label class="field__label" for="profile-password-repeat">Повтор</label>
+                <input id="profile-password-repeat" type="password" autocomplete="new-password" />
+                <span class="field__error">Пароли не совпадают</span>
+              </div>
+            </div>
+          </div>
+          <div class="dialog__footer">
+            <button type="button" class="btn-text" id="profile-logout">Выйти</button>
+            <button type="button" class="btn btn--ghost" data-close>Закрыть</button>
+            <button type="submit" class="btn btn--ink">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <aside class="tweaks" aria-label="Параметры интерфейса">
+    <div class="tweaks__panel" id="tweaks-panel">
+      <h2>Tweaks</h2>
+      <div class="tweaks__row">
+        <label for="tweak-window">Окно</label>
+        <select id="tweak-window">
+          <option value="">Закрыто</option>
+          <option value="create">Создание</option>
+          <option value="edit">Редактирование</option>
+          <option value="auth">Авторизация</option>
+          <option value="profile">Профиль</option>
+        </select>
+      </div>
+      <div class="tweaks__row">
+        <label for="tweak-auth">Сессия</label>
+        <select id="tweak-auth">
+          <option value="guest">Гость — Войти</option>
+          <option value="user">Профиль</option>
+        </select>
+      </div>
+      <div class="tweaks__row">
+        <label for="tweak-theme">Тон фона</label>
+        <select id="tweak-theme">
+          <option value="warm">Тёплый</option>
+          <option value="cool">Холодный</option>
+        </select>
+      </div>
+      <div class="tweaks__row">
+        <label for="tweak-density">Плотность карточек</label>
+        <select id="tweak-density">
+          <option value="comfortable">Комфорт</option>
+          <option value="compact">Компакт</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" class="tweaks__toggle" id="tweaks-toggle" aria-expanded="false" aria-controls="tweaks-panel">Tweaks</button>
+  </aside>
+
+  <div class="sheet" id="sheet">
+    <section class="scene" aria-label="Создание карточки">
+      <p class="scene__index">01</p>
+      <h2 class="scene__name">Создание карточки</h2>
+      <div class="scene__frame">
+        <div class="dialog">
+          <p class="dialog__kicker">Карточка</p>
+          <div class="form">
+            <div class="field field--title">
+              <input type="text" placeholder="Название" readonly />
+            </div>
+            <div class="field">
+              <span class="field__label">Описание</span>
+              <textarea placeholder="Коротко, одним абзацем" readonly></textarea>
+            </div>
+            <div class="field">
+              <span class="field__label">Категория</span>
+              <div class="choice choice--tags">
+                <span class="choice__item choice__item--ux">UX Design<input type="radio" checked disabled /></span>
+                <span class="choice__item choice__item--ui">UI Design<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--test">Testing<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--pm">Project Management<input type="radio" disabled /></span>
+                <span class="choice__compose"><input type="text" placeholder="Новая" readonly /><span class="choice__commit" aria-hidden="true">+</span></span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field__label">Колонка</span>
+              <div class="choice">
+                <span class="choice__item choice__item--todo">To Do<input type="radio" checked disabled /></span>
+                <span class="choice__item choice__item--progress">In Progress<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--done">Done<input type="radio" disabled /></span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field__label">Дата</span>
+              <input type="text" value="" placeholder="—" readonly />
+            </div>
+            <div class="dialog__footer">
+              <span class="btn btn--ghost">Отмена</span>
+              <span class="btn btn--ink">Создать</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" aria-label="Редактирование карточки">
+      <p class="scene__index">02</p>
+      <h2 class="scene__name">Редактирование</h2>
+      <div class="scene__frame">
+        <div class="dialog">
+          <p class="dialog__kicker">Карточка</p>
+          <div class="form">
+            <div class="field field--title">
+              <input type="text" value="Design homepage mockup" readonly />
+            </div>
+            <div class="field">
+              <span class="field__label">Описание</span>
+              <textarea readonly>High-fidelity version for review</textarea>
+            </div>
+            <div class="field">
+              <span class="field__label">Категория</span>
+              <div class="choice choice--tags">
+                <span class="choice__item choice__item--ux">UX Design<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--ui">UI Design<input type="radio" checked disabled /></span>
+                <span class="choice__item choice__item--test">Testing<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--pm">Project Management<input type="radio" disabled /></span>
+                <span class="choice__compose"><input type="text" placeholder="Новая" readonly /><span class="choice__commit" aria-hidden="true">+</span></span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field__label">Колонка</span>
+              <div class="choice">
+                <span class="choice__item choice__item--todo">To Do<input type="radio" disabled /></span>
+                <span class="choice__item choice__item--progress">In Progress<input type="radio" checked disabled /></span>
+                <span class="choice__item choice__item--done">Done<input type="radio" disabled /></span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field__label">Дата</span>
+              <input type="text" value="6 Jul 2024" readonly />
+            </div>
+            <div class="dialog__footer">
+              <span class="btn-text">Удалить</span>
+              <span class="btn btn--ghost">Отмена</span>
+              <span class="btn btn--ink">Сохранить</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" aria-label="Авторизация">
+      <p class="scene__index">03</p>
+      <h2 class="scene__name">Авторизация</h2>
+      <div class="scene__frame">
+        <div class="dialog dialog--narrow" style="margin-inline: auto;">
+          <div class="auth-brand">
+            <div class="top-bar__mark" aria-hidden="true"></div>
+            <span>Board</span>
+          </div>
+          <p class="dialog__kicker">Доска</p>
+          <h3 class="dialog__title">Войти</h3>
+          <div class="form">
+            <div class="field">
+              <span class="field__label">Логин</span>
+              <input type="text" placeholder="x1000sa" readonly />
+            </div>
+            <div class="field">
+              <span class="field__label">Пароль</span>
+              <input type="password" readonly />
+            </div>
+            <span class="btn btn--ink btn--block">Войти</span>
+          </div>
+          <p class="auth-switch"><span class="btn-text">Нет аккаунта — создать</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" aria-label="Профиль">
+      <p class="scene__index">04</p>
+      <h2 class="scene__name">Профиль</h2>
+      <div class="scene__frame">
+        <div class="dialog">
+          <div class="profile-hero">
+            <div class="profile-hero__avatar" aria-hidden="true">X</div>
+            <div>
+              <p class="dialog__kicker">Профиль</p>
+              <h3 class="dialog__title dialog__title--flush">x1000sa</h3>
+            </div>
+          </div>
+          <div class="form">
+            <div class="field">
+              <span class="field__label">Имя на доске</span>
+              <input type="text" value="x1000sa" readonly />
+            </div>
+            <div class="field">
+              <span class="field__label">Логин</span>
+              <input type="text" value="x1000sa" readonly />
+            </div>
+            <div class="password-change">
+              <span class="btn-text">Сменить пароль</span>
+            </div>
+            <div class="dialog__footer">
+              <span class="btn-text">Выйти</span>
+              <span class="btn btn--ghost">Закрыть</span>
+              <span class="btn btn--ink">Сохранить</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const TAGS = {
+      ux: { label: "UX Design", cls: "tag--ux" },
+      ui: { label: "UI Design", cls: "tag--ui" },
+      test: { label: "Testing", cls: "tag--test" },
+      pm: { label: "Project Management", cls: "tag--pm" }
+    };
+
+    const body = document.body;
+    const overlay = document.getElementById("overlay");
+    const dialog = document.getElementById("dialog");
+    const panes = {
+      card: document.getElementById("pane-card"),
+      auth: document.getElementById("pane-auth"),
+      profile: document.getElementById("pane-profile")
+    };
+    const tagChoices = document.getElementById("tag-choices");
+    const tagDraft = document.getElementById("tag-draft");
+    const tagCommit = document.getElementById("tag-commit");
+    const cardForm = document.getElementById("card-form");
+    const cardTitle = document.getElementById("card-title");
+    const cardBody = document.getElementById("card-body");
+    const cardDate = document.getElementById("card-date");
+    const cardKicker = document.getElementById("card-kicker");
+    const dialogTitle = document.getElementById("dialog-title");
+    const cardSubmit = document.getElementById("card-submit");
+    const cardDelete = document.getElementById("card-delete");
+    const titleField = document.getElementById("field-title");
+    const authGuest = document.getElementById("auth-guest");
+    const authUser = document.getElementById("auth-user");
+    const chipName = document.getElementById("chip-name");
+    const chipLetter = document.getElementById("chip-letter");
+    const tweakWindow = document.getElementById("tweak-window");
+    const tweakAuth = document.getElementById("tweak-auth");
+    let editingCard = null;
+    let lastFocus = null;
+    let authMode = "signin";
+    let account = { name: "x1000sa", login: "x1000sa", password: "" };
+
+    function letterOf(name) {
+      const ch = (name || "").trim().charAt(0);
+      return ch ? ch.toUpperCase() : "X";
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso + "T00:00:00");
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+    }
+
+    function refreshEmpty() {
+      document.querySelectorAll(".column__stack").forEach((stack) => {
+        const empty = stack.querySelector(".column__empty");
+        const has = stack.querySelector(".card:not(.is-dragging), .card-slot");
+        if (!has && !empty) {
+          const note = document.createElement("p");
+          note.className = "column__empty";
+          note.textContent = "Пусто";
+          stack.appendChild(note);
+        } else if (has && empty) {
+          empty.remove();
+        }
+      });
+    }
+
+    function setAuth(on) {
+      body.dataset.auth = on ? "user" : "guest";
+      authGuest.hidden = on;
+      authUser.hidden = !on;
+      tweakAuth.value = on ? "user" : "guest";
+      chipName.textContent = account.name;
+      chipLetter.textContent = letterOf(account.name);
+    }
+
+    function showPane(name) {
+      Object.entries(panes).forEach(([key, pane]) => {
+        pane.hidden = key !== name;
+      });
+      dialog.classList.toggle("dialog--narrow", name === "auth");
+      if (name === "auth") dialog.setAttribute("aria-labelledby", "auth-title");
+      else if (name === "profile") dialog.setAttribute("aria-labelledby", "profile-heading");
+      else dialog.setAttribute("aria-labelledby", "dialog-title");
+    }
+
+    function openOverlay(pane) {
+      lastFocus = document.activeElement;
+      showPane(pane);
+      overlay.hidden = false;
+      const focusable = dialog.querySelector(".pane:not([hidden]) .field:not([hidden]) input, .pane:not([hidden]) .field:not([hidden]) textarea");
+      if (focusable) focusable.focus();
+    }
+
+    function closeOverlay() {
+      overlay.hidden = true;
+      editingCard = null;
+      tweakWindow.value = "";
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    }
+
+    function checked(name) {
+      const el = cardForm.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : "";
+    }
+
+    function setRadio(name, value) {
+      cardForm.querySelectorAll('input[name="' + name + '"]').forEach((input) => {
+        input.checked = input.value === value;
+      });
+    }
+
+    function openCreate() {
+      editingCard = null;
+      cardForm.reset();
+      setRadio("tag", "ux");
+      setRadio("column", "todo");
+      titleField.classList.remove("is-invalid");
+      cardKicker.textContent = "Карточка";
+      dialogTitle.textContent = "Новая карточка";
+      cardSubmit.textContent = "Создать";
+      cardDelete.hidden = true;
+      panes.card.dataset.mode = "create";
+      openOverlay("card");
+      tweakWindow.value = "create";
+    }
+
+    function openEdit(card) {
+      if (!card) return;
+      editingCard = card;
+      const title = card.querySelector(".card__title").textContent;
+      const sub = card.querySelector(".card__sub");
+      cardTitle.value = title;
+      cardBody.value = sub ? sub.textContent : "";
+      cardDate.value = card.dataset.date || "";
+      setRadio("tag", card.dataset.tag || "ux");
+      setRadio("column", card.parentElement.dataset.column || "todo");
+      titleField.classList.remove("is-invalid");
+      dialogTitle.textContent = "Редактирование";
+      cardSubmit.textContent = "Сохранить";
+      cardDelete.hidden = false;
+      panes.card.dataset.mode = "edit";
+      openOverlay("card");
+      tweakWindow.value = "edit";
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const register = mode === "register";
+      document.getElementById("field-name").hidden = !register;
+      document.getElementById("auth-title").textContent = register ? "Создать аккаунт" : "Войти";
+      document.getElementById("auth-submit").textContent = register ? "Создать аккаунт" : "Войти";
+      document.getElementById("auth-toggle").textContent = register ? "Уже есть аккаунт" : "Нет аккаунта — создать";
+      document.getElementById("auth-password").autocomplete = register ? "new-password" : "current-password";
+      ["field-name", "field-email", "field-password"].forEach((id) => {
+        document.getElementById(id).classList.remove("is-invalid");
+      });
+    }
+
+    function openAuth() {
+      setAuthMode("signin");
+      document.getElementById("auth-form").reset();
+      openOverlay("auth");
+      tweakWindow.value = "auth";
+    }
+
+    const passwordFields = document.getElementById("password-fields");
+    const passwordToggle = document.getElementById("password-toggle");
+    const profilePassword = document.getElementById("profile-password");
+    const profilePasswordRepeat = document.getElementById("profile-password-repeat");
+
+    function resetPasswordChange() {
+      passwordFields.hidden = true;
+      passwordToggle.setAttribute("aria-expanded", "false");
+      profilePassword.value = "";
+      profilePasswordRepeat.value = "";
+      document.getElementById("field-new-password").classList.remove("is-invalid");
+      document.getElementById("field-password-repeat").classList.remove("is-invalid");
+    }
+
+    function openProfile() {
+      setAuth(true);
+      document.getElementById("profile-name").value = account.name;
+      document.getElementById("profile-email").value = account.login;
+      document.getElementById("profile-heading").textContent = account.name;
+      document.getElementById("profile-letter").textContent = letterOf(account.name);
+      document.getElementById("field-display").classList.remove("is-invalid");
+      resetPasswordChange();
+      openOverlay("profile");
+      tweakWindow.value = "profile";
+    }
+
+    function commitCategory() {
+      const name = tagDraft.value.trim().replace(/\s+/g, " ");
+      if (!name) return;
+      const found = Object.entries(TAGS).find(([, tag]) => tag.label.toLowerCase() === name.toLowerCase());
+      const id = found ? found[0] : createCategory(name);
+      const input = tagChoices.querySelector('input[name="tag"][value="' + CSS.escape(id) + '"]');
+      if (input) input.checked = true;
+      tagDraft.value = "";
+      tagCommit.disabled = true;
+    }
+
+    function createCategory(name) {
+      const id = "tag-" + Date.now().toString(36);
+      TAGS[id] = { label: name, cls: "tag--custom" };
+      const label = document.createElement("label");
+      label.className = "choice__item choice__item--custom";
+      label.append(document.createTextNode(name));
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "tag";
+      input.value = id;
+      label.append(input);
+      tagChoices.insertBefore(label, tagChoices.querySelector(".choice__compose"));
+      return id;
+    }
+
+    function paintCard(card, data) {
+      card.dataset.tag = data.tag;
+      card.dataset.date = data.date || "";
+      let tag = card.querySelector(".tag");
+      if (!tag) {
+        tag = document.createElement("span");
+        tag.className = "tag";
+        card.prepend(tag);
+      }
+      tag.className = "tag " + TAGS[data.tag].cls;
+      tag.textContent = TAGS[data.tag].label;
+      let title = card.querySelector(".card__title");
+      if (!title) {
+        title = document.createElement("h3");
+        title.className = "card__title";
+        tag.insertAdjacentElement("afterend", title);
+      }
+      title.textContent = data.title;
+      let sub = card.querySelector(".card__sub");
+      if (data.body) {
+        if (!sub) {
+          sub = document.createElement("p");
+          sub.className = "card__sub";
+          title.insertAdjacentElement("afterend", sub);
+        }
+        sub.textContent = data.body;
+      } else if (sub) {
+        sub.remove();
+      }
+      const footer = card.querySelector(".card__footer");
+      let time = card.querySelector(".card__date");
+      if (data.date) {
+        if (!time) {
+          time = document.createElement("time");
+          time.className = "card__date";
+          footer.appendChild(time);
+        }
+        time.dateTime = data.date;
+        time.textContent = formatDate(data.date);
+      } else if (time) {
+        time.remove();
+      }
+    }
+
+    function buildCard(data) {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.draggable = true;
+      const footer = document.createElement("footer");
+      footer.className = "card__footer";
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "btn-edit";
+      edit.textContent = "Edit";
+      footer.appendChild(edit);
+      card.appendChild(footer);
+      paintCard(card, data);
+      return card;
+    }
+
+    function readCardForm() {
+      const title = cardTitle.value.trim();
+      titleField.classList.toggle("is-invalid", !title);
+      if (!title) {
+        cardTitle.focus();
+        return null;
+      }
+      return {
+        title,
+        body: cardBody.value.trim(),
+        tag: checked("tag") || "ux",
+        column: checked("column") || "todo",
+        date: cardDate.value
+      };
+    }
+
+    document.getElementById("open-create").addEventListener("click", openCreate);
+    document.getElementById("open-auth").addEventListener("click", openAuth);
+    document.getElementById("open-profile").addEventListener("click", openProfile);
+    document.getElementById("dialog-close").addEventListener("click", closeOverlay);
+
+    document.getElementById("app").addEventListener("click", (event) => {
+      const edit = event.target.closest(".btn-edit");
+      if (edit) openEdit(edit.closest(".card"));
+    });
+
+    let cardDrag = null;
+
+    function endCardDrag(commit) {
+      if (!cardDrag) return;
+      const { card, slot, homeParent, homeNext } = cardDrag;
+      cardDrag = null;
+      document.querySelectorAll(".column.is-drop").forEach((column) => column.classList.remove("is-drop"));
+      document.body.classList.remove("is-card-drag");
+      card.classList.remove("is-dragging");
+      if (commit && slot.isConnected) slot.replaceWith(card);
+      else {
+        slot.remove();
+        if (homeNext && homeNext.parentElement === homeParent) homeParent.insertBefore(card, homeNext);
+        else homeParent.appendChild(card);
+      }
+      refreshEmpty();
+    }
+
+    function moveCardSlot(x, y) {
+      if (!cardDrag) return;
+      const under = document.elementFromPoint(x, y);
+      if (!under) return;
+      const column = under.closest(".column");
+      if (!column) return;
+      const stack = column.querySelector(".column__stack");
+      document.querySelectorAll(".column.is-drop").forEach((item) => item.classList.remove("is-drop"));
+      column.classList.add("is-drop");
+      const cards = [...stack.querySelectorAll(".card")].filter((item) => item !== cardDrag.card);
+      let placed = false;
+      for (const item of cards) {
+        const box = item.getBoundingClientRect();
+        if (y < box.top + box.height / 2) {
+          item.before(cardDrag.slot);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        const empty = stack.querySelector(".column__empty");
+        if (empty) empty.before(cardDrag.slot);
+        else stack.appendChild(cardDrag.slot);
+      }
+      refreshEmpty();
+    }
+
+    document.querySelector(".columns").addEventListener("dragstart", (event) => {
+      const card = event.target.closest(".card");
+      if (!card || !overlay.hidden || event.target.closest("a, button")) {
+        event.preventDefault();
+        return;
+      }
+      const slot = document.createElement("div");
+      slot.className = "card-slot";
+      slot.style.height = card.getBoundingClientRect().height + "px";
+      const homeParent = card.parentElement;
+      const homeNext = card.nextSibling;
+      card.before(slot);
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", "card");
+      document.body.classList.add("is-card-drag");
+      cardDrag = { card, slot, homeParent, homeNext };
+      requestAnimationFrame(() => {
+        if (cardDrag && cardDrag.card === card) card.classList.add("is-dragging");
+      });
+    });
+
+    document.addEventListener("dragover", (event) => {
+      if (!cardDrag) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+      moveCardSlot(event.clientX, event.clientY);
+    });
+
+    document.addEventListener("drop", (event) => {
+      if (!cardDrag) return;
+      event.preventDefault();
+      moveCardSlot(event.clientX, event.clientY);
+      endCardDrag(true);
+    });
+
+    document.addEventListener("dragend", () => {
+      endCardDrag(false);
+    });
+
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.closest("[data-close]")) closeOverlay();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && cardDrag) {
+        endCardDrag(false);
+        return;
+      }
+      if (event.key === "Escape" && !overlay.hidden) closeOverlay();
+    });
+
+    cardForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = readCardForm();
+      if (!data) return;
+      if (editingCard) {
+        paintCard(editingCard, data);
+        const stack = document.querySelector('.column__stack[data-column="' + data.column + '"]');
+        if (stack && editingCard.parentElement !== stack) stack.appendChild(editingCard);
+      } else {
+        const stack = document.querySelector('.column__stack[data-column="' + data.column + '"]');
+        stack.appendChild(buildCard(data));
+      }
+      refreshEmpty();
+      closeOverlay();
+    });
+
+    tagDraft.addEventListener("input", () => {
+      tagCommit.disabled = tagDraft.value.trim() === "";
+    });
+
+    tagDraft.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        commitCategory();
+      } else if (event.key === "Escape") {
+        event.stopPropagation();
+        tagDraft.value = "";
+        tagCommit.disabled = true;
+      }
+    });
+
+    tagCommit.addEventListener("click", commitCategory);
+
+    cardDelete.addEventListener("click", () => {
+      if (editingCard) editingCard.remove();
+      refreshEmpty();
+      closeOverlay();
+    });
+
+    document.getElementById("auth-toggle").addEventListener("click", () => {
+      setAuthMode(authMode === "signin" ? "register" : "signin");
+    });
+
+    document.getElementById("auth-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const login = document.getElementById("auth-email");
+      const password = document.getElementById("auth-password");
+      const name = document.getElementById("auth-name");
+      let ok = true;
+      const mark = (fieldId, input, bad) => {
+        document.getElementById(fieldId).classList.toggle("is-invalid", bad);
+        if (bad && ok) input.focus();
+        if (bad) ok = false;
+      };
+      if (authMode === "register") mark("field-name", name, !name.value.trim());
+      mark("field-email", login, !login.value.trim());
+      mark("field-password", password, !password.value);
+      if (!ok) return;
+      if (authMode === "register" && name.value.trim()) account.name = name.value.trim();
+      account.login = login.value.trim();
+      account.password = password.value;
+      setAuth(true);
+      closeOverlay();
+    });
+
+    passwordToggle.addEventListener("click", () => {
+      const opening = passwordFields.hidden;
+      if (!opening) {
+        resetPasswordChange();
+        return;
+      }
+      passwordFields.hidden = false;
+      passwordToggle.setAttribute("aria-expanded", "true");
+      profilePassword.focus();
+    });
+
+    document.getElementById("profile-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = document.getElementById("profile-name");
+      const name = input.value.trim();
+      let ok = true;
+      const mark = (fieldId, control, bad) => {
+        document.getElementById(fieldId).classList.toggle("is-invalid", bad);
+        if (bad && ok) control.focus();
+        if (bad) ok = false;
+      };
+      mark("field-display", input, !name);
+      if (!passwordFields.hidden) {
+        const next = profilePassword.value;
+        const again = profilePasswordRepeat.value;
+        mark("field-new-password", profilePassword, !next);
+        mark("field-password-repeat", profilePasswordRepeat, Boolean(next) && next !== again);
+      }
+      if (!ok) return;
+      account.name = name;
+      if (!passwordFields.hidden) account.password = profilePassword.value;
+      setAuth(true);
+      closeOverlay();
+    });
+
+    document.getElementById("profile-logout").addEventListener("click", () => {
+      setAuth(false);
+      closeOverlay();
+    });
+
+    const panel = document.getElementById("tweaks-panel");
+    const toggle = document.getElementById("tweaks-toggle");
+    toggle.addEventListener("click", () => {
+      const open = panel.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+
+    tweakWindow.addEventListener("change", () => {
+      const value = tweakWindow.value;
+      if (!value) closeOverlay();
+      else if (value === "create") openCreate();
+      else if (value === "edit") openEdit(document.getElementById("card-homepage"));
+      else if (value === "auth") openAuth();
+      else if (value === "profile") openProfile();
+    });
+
+    tweakAuth.addEventListener("change", (event) => setAuth(event.target.value === "user"));
+    document.getElementById("tweak-theme").addEventListener("change", (event) => {
+      body.dataset.theme = event.target.value;
+    });
+    document.getElementById("tweak-density").addEventListener("change", (event) => {
+      body.dataset.density = event.target.value;
+    });
+
+    function applyView() {
+      const params = new URLSearchParams(location.search);
+      const hash = location.hash.replace("#", "");
+      const sheet = params.get("sheet") === "1" || hash === "sheet";
+      body.dataset.view = sheet ? "sheet" : "app";
+      if (sheet) return;
+      if (hash === "create") openCreate();
+      else if (hash === "edit") openEdit(document.getElementById("card-homepage"));
+      else if (hash === "auth") openAuth();
+      else if (hash === "profile") openProfile();
+    }
+
+    applyView();
+    refreshEmpty();
+  </script>
+</body>
+</html>
